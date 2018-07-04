@@ -1,4 +1,4 @@
-package quynh;
+package data;
 
 public class Bus {
 
