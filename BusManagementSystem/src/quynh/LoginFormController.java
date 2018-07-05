@@ -1,6 +1,9 @@
 package quynh;
 
+import data.ConnectSQLServer;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -32,7 +35,18 @@ public class LoginFormController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-    }    
-    
+        // Connection to database
+
+        try {
+            Connection connection = ConnectSQLServer.getAutoConnection();
+            labelConnection.setText("Connection successfully!");
+
+            Statement statement = connection.createStatement();
+
+        } catch (Exception e) {
+            labelConnection.setText("Connection failure!");
+        }
+
+    }
+
 }

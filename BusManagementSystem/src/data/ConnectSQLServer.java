@@ -1,17 +1,16 @@
-package quynh;
+package data;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
+import java.sql.SQLException;
 
 public class ConnectSQLServer {
-    
-    private static String DTB_URL = "jdbc:sqlserver://localhost:1433;"
-            + "databaseName=BusManagementDtb;"
-            + "integratedSecurity=true";
+
+    private static String DTB_URL = "jdbc:sqlserver://localhost\\SQLEXPRESS:1433;"
+            + "databaseName=BusManagementDtb";
     private static String USER_NAME = "sa";
     private static String PASSWORD = "12345678";
-    
+
 //    public static void main(String args[]) {
 //        try {
 //            
@@ -36,10 +35,9 @@ public class ConnectSQLServer {
 //            System.out.println("Connection Failure!");
 //        }
 //    }
-    
     public static Connection getConnection(String dbURL, String userName, String password) {
         Connection connection = null;
-        
+
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             connection = DriverManager.getConnection(dbURL, userName, password);
@@ -47,8 +45,15 @@ public class ConnectSQLServer {
         } catch (Exception e) {
             System.out.println("Connect Unsuccessfully!");
         }
-        
+
         return connection;
     }
-    
+
+    public static Connection getAutoConnection() {
+
+        Connection connection = getConnection(DTB_URL, USER_NAME, PASSWORD);
+
+        return connection;
+    }
+
 }
