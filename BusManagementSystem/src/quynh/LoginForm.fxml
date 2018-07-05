@@ -59,8 +59,7 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Button fx:id="buttonCancel" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="Cancel" GridPane.halignment="RIGHT" />
-                  <Button fx:id="buttonSignIn" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="Sign in" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
+                  <Button fx:id="buttonSignIn" mnemonicParsing="false" onAction="#handleButtonSignIn" prefHeight="30.0" prefWidth="70.0" text="Sign in" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
                </children>
             </GridPane>
          </children>
