@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
@@ -32,7 +33,6 @@
          <children>
             <Label text="ID" GridPane.rowIndex="1" />
             <TextField fx:id="textfieldID" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField fx:id="textfieldPass" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Label text="Password" GridPane.rowIndex="2" />
             <GridPane GridPane.columnIndex="1">
               <columnConstraints>
@@ -62,6 +62,7 @@
                   <Button fx:id="buttonSignIn" mnemonicParsing="false" onAction="#handleButtonSignIn" prefHeight="30.0" prefWidth="70.0" text="Sign in" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
                </children>
             </GridPane>
+            <PasswordField fx:id="textfieldPass" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          </children>
       </GridPane>
       <ImageView fitHeight="46.0" fitWidth="297.0" layoutX="181.0" layoutY="51.0" pickOnBounds="true" preserveRatio="true">

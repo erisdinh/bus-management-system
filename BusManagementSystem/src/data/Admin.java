@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class Admin {
 
-    private int adminID;
+    private String adminID;
     private String adminPass;
     private String adminName;
     private Date adminDOB;
@@ -14,7 +14,7 @@ public class Admin {
 
     public Admin() {}
     
-    public Admin(int adminID, String adminPass, String adminName, Date adminDOB, String adminPhoneNum, String adminMail) {
+    public Admin(String adminID, String adminPass, String adminName, Date adminDOB, String adminPhoneNum, String adminMail) {
         setAdminID(adminID);
         setAdminPass(adminPass);
         setAdminName(adminName);
@@ -23,11 +23,11 @@ public class Admin {
         setAdminMail(adminMail);
     }
     
-    public int getAdminID() {
+    public String getAdminID() {
         return adminID;
     }
 
-    public void setAdminID(int adminID) {
+    public void setAdminID(String adminID) {
         this.adminID = adminID;
     }
 

@@ -52,9 +52,8 @@ public class LoginFormController implements Initializable {
 
             // Success connection
             labelConnection.setText("Connection successfully!");
-            
+
             busManagementModel = new BusManagementSystemModel();
-            busManagementModel.getAdminDatabase(connection);
         } catch (SQLException e) {
             labelConnection.setText("Connection failure!");
         }
@@ -68,6 +67,18 @@ public class LoginFormController implements Initializable {
         String strAccountType = radioAccountType.getText();
 
         if (strAccountType.equals("Admin")) {
+            busManagementModel.getAdminDatabase(connection);
+            
+            String ID = textfieldID.getText();
+            String pass = textfieldPass.getText();
+            
+            // Check the ID and password
+            if(busManagementModel.isAdmin(ID, pass) == true) {
+                System.out.println("Sign in");
+            } else {
+                System.out.println("Try again");
+            }
+            
         }
 
     }
