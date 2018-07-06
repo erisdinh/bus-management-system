@@ -1,6 +1,6 @@
 package quynh;
 
-import data.Admin;
+import data.User;
 import data.ConnectSQLServer;
 import java.net.URL;
 import java.sql.Connection;
@@ -23,18 +23,12 @@ public class LoginFormController implements Initializable {
     private BusManagementSystemModel busManagementModel;
     private static Connection connection;
     private static Statement statement;
-    private ArrayList<Admin> admins;
+    private ArrayList<User> admins;
 
-    @FXML
-    private ToggleGroup accountType;
     @FXML
     private TextField textfieldID;
     @FXML
     private TextField textfieldPass;
-    @FXML
-    private RadioButton radioAdmin;
-    @FXML
-    private RadioButton radioUser;
     @FXML
     private Button buttonSignIn;
     @FXML
@@ -62,23 +56,16 @@ public class LoginFormController implements Initializable {
     @FXML
     private void handleButtonSignIn(ActionEvent event) throws SQLException {
 
-        // Get selected radio button of account type 
-        RadioButton radioAccountType = (RadioButton) accountType.getSelectedToggle();
-        String strAccountType = radioAccountType.getText();
+        String ID = textfieldID.getText();
+        String pass = textfieldPass.getText();
 
-        if (strAccountType.equals("Admin")) {
-            busManagementModel.getAdminDatabase(connection);
-            
-            String ID = textfieldID.getText();
-            String pass = textfieldPass.getText();
-            
-            // Check the ID and password
-            if(busManagementModel.isAdmin(ID, pass) == true) {
-                System.out.println("Sign in");
-            } else {
-                System.out.println("Try again");
-            }
-            
+        busManagementModel.getUserDatabase(connection);
+
+        // Check the ID and password
+        if (busManagementModel.isUser(ID, pass) == true) {
+            System.out.println("Sign in");
+        } else {
+            System.out.println("Try again");
         }
 
     }

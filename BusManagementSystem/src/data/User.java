@@ -5,87 +5,98 @@ import java.util.Objects;
 
 public class User {
 
-    private int userID;
-    private String userPass;
-    private String userName;
-    private Date userDOB;
-    private int userPhoneNum;
-    private String userMail;
-    private String userHomeCampus;
-    
-    public User() {}
-    
-    public User(int userID, String userPass, String userName, Date userDate, int userPhoneNum, String userMail, String userHomeCampus) {
-        setUserID(userID);
-        setUserPass(userPass);
-        setUserName(userName);
-        setUserDOB(userDOB);
-        setUserPhoneNum(userPhoneNum);
-        setUserMail(userMail);
-        setUserHomeCampus(userHomeCampus);
+    private String id;
+    private String pass;
+    private String name;
+    private Date dob;
+    private String phoneNum;
+    private String mail;
+    private String homeCampus;
+    private String accType;
+
+    public User() {
     }
 
-    public int getUserID() {
-        return userID;
+    public User(String id, String pass, String accType, String name, Date dob, String phoneNum, String mail, String homeCampus) {
+        setId(id);
+        setPass(pass);
+        setName(name);
+        setDob(dob);
+        setPhoneNum(phoneNum);
+        setPhoneNum(phoneNum);
+        setMail(mail);
+        setHomeCampus(homeCampus);
     }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public String getId() {
+        return id;
     }
 
-    public String getUserPass() {
-        return userPass;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setUserPass(String userPass) {
-        this.userPass = userPass;
+    public String getPass() {
+        return pass;
     }
 
-    public String getUserName() {
-        return userName;
+    public void setPass(String pass) {
+        this.pass = pass;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public String getName() {
+        return name;
     }
 
-    public Date getUserDOB() {
-        return userDOB;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setUserDOB(Date userDOB) {
-        this.userDOB = userDOB;
+    public Date getDob() {
+        return dob;
     }
 
-    public int getUserPhoneNum() {
-        return userPhoneNum;
+    public void setDob(Date dob) {
+        this.dob = dob;
     }
 
-    public void setUserPhoneNum(int userPhoneNum) {
-        this.userPhoneNum = userPhoneNum;
+    public String getPhoneNum() {
+        return phoneNum;
     }
 
-    public String getUserMail() {
-        return userMail;
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
     }
 
-    public void setUserMail(String userMail) {
-        this.userMail = userMail;
+    public String getMail() {
+        return mail;
     }
 
-    public String getUserHomeCampus() {
-        return userHomeCampus;
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
-    public void setUserHomeCampus(String userHomeCampus) {
-        this.userHomeCampus = userHomeCampus;
+    public String getHomeCampus() {
+        return homeCampus;
+    }
+
+    public void setHomeCampus(String homeCampus) {
+        this.homeCampus = homeCampus;
+    }
+
+    public String getAccType() {
+        return accType;
+    }
+
+    public void setAccType(String accType) {
+        this.accType = accType;
     }
 
     //overide hashCode()
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 71 * hash + Objects.hashCode(this.userID);
+        hash = 71 * hash + Objects.hashCode(this.id);
         return hash;
     }
 }

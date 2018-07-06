@@ -1,6 +1,6 @@
 package quynh;
 
-import data.Admin;
+import data.User;
 import data.Bus;
 import data.User;
 import java.util.Date;
@@ -9,7 +9,7 @@ public class BusReservationModel {
     
     private int resNum;
     private User user;
-    private Admin admin;
+    private User admin;
     private Bus bus;
     
     
