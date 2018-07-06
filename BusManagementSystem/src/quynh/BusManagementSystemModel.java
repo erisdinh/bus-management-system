@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class BusManagementSystemModel {
-    
+
     private ArrayList<User> users;
     private ArrayList<Bus> buses;
 
@@ -60,7 +60,6 @@ public class BusManagementSystemModel {
                 String phoneNum = resultSet.getString("PhoneNum").trim();
                 String mail = resultSet.getString("Mail").trim();
                 String homeCampus = resultSet.getString("HomeCampus").trim();
-                
 
                 // Store temporary user data into tempUser
                 User tempUser = new User(ID, pass, accType, name, dob, phoneNum, mail, homeCampus);
@@ -102,15 +101,24 @@ public class BusManagementSystemModel {
 
         boolean isUser = false;
 
-        // Get the admin that have the same ID then store its password in tempPass
+        // Get the user that have the same ID then store its password in tempPass
         User tempUser = new User();
         tempUser = getUserByID(ID);
-        String tempPass = tempUser.getPass();
 
-        // If the password is the same, return true
-        if (password.equals(tempPass)) {
-            isUser = true;
+        if (tempUser.getId()!= null) {
+
+            String tempPass = tempUser.getPass();
+
+            // If the password is the same, return true
+            if (password.equals(tempPass)) {
+                isUser = true;
+            }
+
+        } else {
+
+            isUser = false;
         }
+
         return isUser;
     }
 }

@@ -8,22 +8,27 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.stage.Stage;
 
 public class LoginFormController implements Initializable {
 
+    private Stage stage;
     private BusManagementSystemModel busManagementModel;
     private static Connection connection;
     private static Statement statement;
-    private ArrayList<User> admins;
 
     @FXML
     private TextField textfieldID;
@@ -53,6 +58,28 @@ public class LoginFormController implements Initializable {
         }
     }
 
+    public void setStage(Stage stage) {
+
+        this.stage = stage;
+        stage.setResizable(false);
+        stage.setOnCloseRequest(e -> {
+
+            // prompt user to confirm
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to close?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+
+                // User click OK, close the application
+                Platform.exit();
+            } else {
+
+                // eat tup the close event
+                e.consume();
+            }
+        });
+
+    }
+
     @FXML
     private void handleButtonSignIn(ActionEvent event) throws SQLException {
 
@@ -61,11 +88,22 @@ public class LoginFormController implements Initializable {
 
         busManagementModel.getUserDatabase(connection);
 
-        // Check the ID and password
-        if (busManagementModel.isUser(ID, pass) == true) {
-            System.out.println("Sign in");
+        if (ID.equals("") || pass.equals("")) {
+            
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please enter your ID and Password!");
+            Optional<ButtonType> result = alert.showAndWait();
+
         } else {
-            System.out.println("Try again");
+
+            // Check the ID and password
+            if (busManagementModel.isUser(ID, pass) == true) {
+                System.out.println("Sign in");
+            } else {
+                System.out.println("Try again");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "ID/Password is not correct!");
+                Optional<ButtonType> result = alert.showAndWait();
+            }
+
         }
 
     }
