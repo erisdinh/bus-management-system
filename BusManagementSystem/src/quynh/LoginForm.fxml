@@ -17,7 +17,7 @@
 
 <AnchorPane id="AnchorPane" prefHeight="428.0" prefWidth="578.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="quynh.LoginFormController">
    <children>
-      <GridPane layoutX="116.0" layoutY="183.0" prefHeight="182.0" prefWidth="347.0">
+      <GridPane layoutX="115.0" layoutY="194.0" prefHeight="182.0" prefWidth="347.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="143.0" minWidth="10.0" prefWidth="106.0" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="252.0" minWidth="10.0" prefWidth="240.0" />
@@ -51,9 +51,9 @@
             <Image url="@../data/Sheridan%20logo.png" />
          </image>
       </ImageView>
-      <Label layoutX="117.0" layoutY="104.0" text="Bus Management" textFill="#250e8c">
+      <Label layoutX="57.0" layoutY="110.0" text="Bus Management System" textFill="#250e8c">
          <font>
-            <Font name="Gabriola" size="64.0" />
+            <Font name="Gabriola" size="60.0" />
          </font>
       </Label>
       <Label fx:id="labelConnection" layoutX="117.0" layoutY="376.0" text="Connection" />
