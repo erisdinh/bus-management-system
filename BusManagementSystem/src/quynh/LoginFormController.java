@@ -2,6 +2,7 @@ package quynh;
 
 import data.User;
 import data.ConnectSQLServer;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -13,7 +14,10 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -21,6 +25,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class LoginFormController implements Initializable {
@@ -81,7 +87,7 @@ public class LoginFormController implements Initializable {
     }
 
     @FXML
-    private void handleButtonSignIn(ActionEvent event) throws SQLException {
+    private void handleButtonSignIn(ActionEvent event) throws SQLException, IOException {
 
         String ID = textfieldID.getText();
         String pass = textfieldPass.getText();
@@ -89,7 +95,7 @@ public class LoginFormController implements Initializable {
         busManagementModel.getUserDatabase(connection);
 
         if (ID.equals("") || pass.equals("")) {
-            
+
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please enter your ID and Password!");
             Optional<ButtonType> result = alert.showAndWait();
 
@@ -98,6 +104,28 @@ public class LoginFormController implements Initializable {
             // Check the ID and password
             if (busManagementModel.isUser(ID, pass) == true) {
                 System.out.println("Sign in");
+
+                // Close LogIn Form
+                this.stage.close();
+
+                // Load scence graph from fxml
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("UserForm.fxml"));
+                Parent root = (Parent) fxmlLoader.load();
+
+                // Create and show about window as modal     
+                Scene scene = new Scene(root);
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setTitle("Welcome to Sheridan Bus Management System");
+                // Set icon
+                stage.getIcons().add(new Image(BusManagementSystem.class.getResourceAsStream("/data/bus.png")));
+                stage.setScene(scene);
+                stage.show();
+
+                // Remember the stage, so can close it later     
+                UserFormController ctrlUserForm = fxmlLoader.getController();
+                ctrlUserForm.setStage(stage);
+
             } else {
                 System.out.println("Try again");
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "ID/Password is not correct!");
