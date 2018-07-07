@@ -1,34 +1,42 @@
 package data;
 
 public class Bus {
-
-    private int busNumber;
-    private String busLicensePlate;
-    private String busType;
+    private int busNum;
+    private String licensePlate;
+    private String type;
     private int numOfSeat;
-
-    public int getBusNumber() {
-        return busNumber;
+    
+    public Bus() {}
+    
+    public Bus(int busNum, String licensePlate, String type, int numOfSeat) {
+        setBusNum(busNum);
+        setLicensePlate(licensePlate);
+        setType(type);
+        setNumOfSeat(numOfSeat);
     }
 
-    public void setBusNumber(int busNumber) {
-        this.busNumber = busNumber;
+    public int getBusNum() {
+        return busNum;
     }
 
-    public String getBusLicensePlate() {
-        return busLicensePlate;
+    public void setBusNum(int busNum) {
+        this.busNum = busNum;
     }
 
-    public void setBusLicensePlate(String busLicensePlate) {
-        this.busLicensePlate = busLicensePlate;
+    public String getLicensePlate() {
+        return licensePlate;
     }
 
-    public String getBusType() {
-        return busType;
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
     }
 
-    public void setBusType(String busType) {
-        this.busType = busType;
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public int getNumOfSeat() {
@@ -38,4 +46,6 @@ public class Bus {
     public void setNumOfSeat(int numOfSeat) {
         this.numOfSeat = numOfSeat;
     }
+    
+    
 }

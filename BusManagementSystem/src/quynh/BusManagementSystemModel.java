@@ -9,11 +9,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class BusManagementSystemModel {
 
     private ArrayList<User> users;
-    private ArrayList<Bus> buses;
+    private ArrayList<Bus> buses = new ArrayList<>();
+    private ArrayList<Integer> busesNum = new ArrayList<>();
 
     public ArrayList<User> getUsers() {
         return users;
@@ -31,11 +33,25 @@ public class BusManagementSystemModel {
         this.buses = buses;
     }
 
+    public ArrayList<Integer> getBusesNum() {
+        
+        for(int i = 0; i < this.buses.size(); i++) {
+            int busNum = buses.get(i).getBusNum();
+            busesNum.add(busNum);
+        }
+        
+        return busesNum;
+    }
+
+    public void setBusesNum(ArrayList<Integer> busesNum) {
+        this.busesNum = busesNum;
+    }
+
     public BusManagementSystemModel() {
     }
 
     // Get User list from Database
-    public void getUserDatabase(Connection connection) {
+    public ArrayList<User> getUserDatabase(Connection connection) {
         try {
 
             System.out.println("Run User Database");
@@ -73,6 +89,8 @@ public class BusManagementSystemModel {
         } catch (SQLException e) {
             System.out.println("Cannot get User data");
         }
+
+        return this.users;
     }
 
     // Get User By ID
@@ -105,7 +123,7 @@ public class BusManagementSystemModel {
         User tempUser = new User();
         tempUser = getUserByID(ID);
 
-        if (tempUser.getId()!= null) {
+        if (tempUser.getId() != null) {
 
             String tempPass = tempUser.getPass();
 
@@ -121,4 +139,79 @@ public class BusManagementSystemModel {
 
         return isUser;
     }
+
+    // Get Bus list from database
+    public ArrayList<Bus> getBusDatabase(Connection connection) {
+
+        try {
+
+            System.out.println("Run Bus Database");
+
+            // Create a statement
+            Statement statement = connection.createStatement();
+
+            // Retrieve Bus table
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM Bus");
+            
+            // Retrieve bus data from database
+            while (resultSet.next()) {
+
+                // Retrieve each bus data
+                int busNum = resultSet.getInt("BusNum");
+                String licensePlate = resultSet.getString("LicensePlate").trim();
+                String type = resultSet.getString("Type").trim();
+                int numOfSeat = resultSet.getInt("NumOfSeat");
+
+                Bus tempBus = new Bus(busNum, licensePlate, type, numOfSeat);
+                
+                this.buses.add(tempBus);
+            }
+
+            System.out.println("End Bus Database");
+            
+        } catch (SQLException e) {
+            System.out.println("Cannot access to Bus database");
+        }
+
+        return this.buses;
+    }
+
+    // Get bus data by Bus number
+    public Bus getBusByBusNum(int busNum) {
+
+        Bus bus = new Bus();
+        Bus tempBus = new Bus();
+
+        for (int i = 0; i < buses.size(); i++) {
+
+            tempBus = buses.get(i);
+
+            if (busNum == (tempBus.getBusNum())) {
+                bus = tempBus;
+            }
+
+        }
+
+        return bus;
+    }
+
+    // populate the category in comboBox
+//    public void populateBusesNum() {
+//        
+//        // Using HashMap to get unique busNum
+//        HashMap<Integer, Integer> list = new HashMap<>();
+//        int key = 0;
+//        for (int i = 0; i < this.buses.size(); i++) {
+//            int busNum = this.buses.get(i).getBusNumber();
+//            if (!list.containsKey(busNum)) {
+//                list.put(busNum, key);
+//                key++;
+//            } else {
+//            }
+//        }
+//        for (int busNum : list.keySet()) {
+//            busesNum.add(busNum);
+//        }
+//    }
+
 }

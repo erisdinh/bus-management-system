@@ -1,8 +1,16 @@
 package quynh;
 
+import data.Bus;
+import data.ConnectSQLServer;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -17,7 +25,10 @@ import javafx.stage.Stage;
 
 public class UserFormController implements Initializable {
 
+    private Connection connection;
     private Stage stage;
+    private BusManagementSystemModel model;
+    private ArrayList<Bus> buses;
 
     @FXML
     private ToggleButton A1;
@@ -104,15 +115,15 @@ public class UserFormController implements Initializable {
     @FXML
     private Label labelSeat;
     @FXML
-    private ComboBox<?> comboBoxBusNum;
+    private ComboBox<Integer> comboBoxBusNum;
     @FXML
-    private ComboBox<?> comboBoxDeparture;
+    private ComboBox<String> comboBoxDeparture;
     @FXML
-    private ComboBox<?> comboBoxDestination;
+    private ComboBox<String> comboBoxDestination;
     @FXML
     private DatePicker datePickerDateRes;
     @FXML
-    private ComboBox<?> comboBoxBusTime;
+    private ComboBox<String> comboBoxBusTime;
     @FXML
     private Label labelBusType;
     @FXML
@@ -128,6 +139,22 @@ public class UserFormController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        connection = ConnectSQLServer.getAutoConnection();
+
+        model = new BusManagementSystemModel();
+        model.getBusDatabase(connection);
+
+        ArrayList<Integer> busesNum = model.getBusesNum();
+
+        comboBoxBusNum.setItems(FXCollections.observableList(busesNum));
+
+        comboBoxBusNum.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent e) {
+                showBusInfo();
+            }
+        });
+
     }
 
     public void setStage(Stage stage) {
@@ -135,7 +162,7 @@ public class UserFormController implements Initializable {
         stage.setResizable(false);
         stage.setOnCloseRequest(e -> {
 
-            // prompt user to confirm
+            // Prompt user to confirm
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to close?");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
@@ -144,10 +171,28 @@ public class UserFormController implements Initializable {
                 stage.close();
             } else {
 
-                // eat up the close event
+                // Eat up the close event
                 e.consume();
             }
         });
+    }
+
+    
+    // A method to show the selected-bus-num Bus Info
+    private void showBusInfo() {
+        Bus bus = new Bus();
+
+        int busNum = comboBoxBusNum.getValue();
+        System.out.println(busNum);
+
+        bus = model.getBusByBusNum(busNum);
+        if (bus == null) {
+            return;
+        } else {
+            labelBusType.setText(bus.getType());
+            labelNumOfSeat.setText(Integer.toString(bus.getNumOfSeat()));
+        }
+
     }
 
 }

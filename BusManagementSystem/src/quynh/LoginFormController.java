@@ -59,6 +59,7 @@ public class LoginFormController implements Initializable {
             labelConnection.setText("Connection successfully!");
 
             busManagementModel = new BusManagementSystemModel();
+
         } catch (SQLException e) {
             labelConnection.setText("Connection failure!");
         }
@@ -79,7 +80,7 @@ public class LoginFormController implements Initializable {
                 Platform.exit();
             } else {
 
-                // eat tup the close event
+                // eat up the close event
                 e.consume();
             }
         });
@@ -89,8 +90,10 @@ public class LoginFormController implements Initializable {
     @FXML
     private void handleButtonSignIn(ActionEvent event) throws SQLException, IOException {
 
-        String ID = textfieldID.getText();
-        String pass = textfieldPass.getText();
+//        String ID = textfieldID.getText();
+//        String pass = textfieldPass.getText();
+        String ID = "991486726";
+        String pass = "password";
 
         busManagementModel.getUserDatabase(connection);
 
@@ -104,6 +107,8 @@ public class LoginFormController implements Initializable {
             // Check the ID and password
             if (busManagementModel.isUser(ID, pass) == true) {
                 System.out.println("Sign in");
+
+                busManagementModel.getBusesNum();
 
                 // Close LogIn Form
                 this.stage.close();
