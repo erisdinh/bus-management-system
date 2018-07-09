@@ -3,6 +3,7 @@ package quynh;
 import data.User;
 import data.User;
 import data.Bus;
+import data.Departure;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,8 +15,20 @@ import java.util.HashMap;
 public class BusManagementSystemModel {
 
     private ArrayList<User> users;
-    private ArrayList<Bus> buses = new ArrayList<>();
-    private ArrayList<Integer> busesNum = new ArrayList<>();
+    private ArrayList<Bus> buses = new ArrayList<Bus>();
+    private ArrayList<Integer> busesNum = new ArrayList<Integer>();
+
+    // Bus 1
+    private ArrayList<String> northTraToHmcNo1 = new ArrayList<String>();
+    private ArrayList<String> northHmcToDavisNo1 = new ArrayList<String>();
+    private ArrayList<String> southDavisToHmcNo1 = new ArrayList<String>();
+    private ArrayList<String> southHmcToTraNo1 = new ArrayList<String>();
+
+    // Bus 2
+    private ArrayList<String> southDavisToHmcNo2 = new ArrayList<String>();
+    private ArrayList<String> southHmcToTraNo2 = new ArrayList<String>();
+    private ArrayList<String> northTraToHmcNo2 = new ArrayList<String>();
+    private ArrayList<String> northHmcToDavisNo2 = new ArrayList<String>();
 
     public ArrayList<User> getUsers() {
         return users;
@@ -34,17 +47,81 @@ public class BusManagementSystemModel {
     }
 
     public ArrayList<Integer> getBusesNum() {
-        
-        for(int i = 0; i < this.buses.size(); i++) {
+
+        for (int i = 0; i < this.buses.size(); i++) {
             int busNum = buses.get(i).getBusNum();
             busesNum.add(busNum);
         }
-        
+
         return busesNum;
     }
 
     public void setBusesNum(ArrayList<Integer> busesNum) {
         this.busesNum = busesNum;
+    }
+
+    public ArrayList<String> getNorthTraToHmcNo1() {
+        return northTraToHmcNo1;
+    }
+
+    public void setNorthTraToHmcNo1(ArrayList<String> northTraToHmcNo1) {
+        this.northTraToHmcNo1 = northTraToHmcNo1;
+    }
+
+    public ArrayList<String> getNorthHmcToDavisNo1() {
+        return northHmcToDavisNo1;
+    }
+
+    public void setNorthHmcToDavisNo1(ArrayList<String> northHmcToDavisNo1) {
+        this.northHmcToDavisNo1 = northHmcToDavisNo1;
+    }
+
+    public ArrayList<String> getSouthDavisToHmcNo1() {
+        return southDavisToHmcNo1;
+    }
+
+    public void setSouthDavisToHmcNo1(ArrayList<String> southDavisToHmcNo1) {
+        this.southDavisToHmcNo1 = southDavisToHmcNo1;
+    }
+
+    public ArrayList<String> getSouthHmcToTraNo1() {
+        return southHmcToTraNo1;
+    }
+
+    public void setSouthHmcToTraNo1(ArrayList<String> southHmcToTraNo1) {
+        this.southHmcToTraNo1 = southHmcToTraNo1;
+    }
+
+    public ArrayList<String> getSouthDavisToHmcNo2() {
+        return southDavisToHmcNo2;
+    }
+
+    public void setSouthDavisToHmcNo2(ArrayList<String> southDavisToHmcNo2) {
+        this.southDavisToHmcNo2 = southDavisToHmcNo2;
+    }
+
+    public ArrayList<String> getSouthHmcToTraNo2() {
+        return southHmcToTraNo2;
+    }
+
+    public void setSouthHmcToTraNo2(ArrayList<String> southHmcToTraNo2) {
+        this.southHmcToTraNo2 = southHmcToTraNo2;
+    }
+
+    public ArrayList<String> getNorthTraToHmcNo2() {
+        return northTraToHmcNo2;
+    }
+
+    public void setNorthTraToHmcNo2(ArrayList<String> northTraToHmcNo2) {
+        this.northTraToHmcNo2 = northTraToHmcNo2;
+    }
+
+    public ArrayList<String> getNorthHmcToDavisNo2() {
+        return northHmcToDavisNo2;
+    }
+
+    public void setNorthHmcToDavisNo2(ArrayList<String> northHmcToDavisNo2) {
+        this.northHmcToDavisNo2 = northHmcToDavisNo2;
     }
 
     public BusManagementSystemModel() {
@@ -152,7 +229,7 @@ public class BusManagementSystemModel {
 
             // Retrieve Bus table
             ResultSet resultSet = statement.executeQuery("SELECT * FROM Bus");
-            
+
             // Retrieve bus data from database
             while (resultSet.next()) {
 
@@ -163,12 +240,12 @@ public class BusManagementSystemModel {
                 int numOfSeat = resultSet.getInt("NumOfSeat");
 
                 Bus tempBus = new Bus(busNum, licensePlate, type, numOfSeat);
-                
+
                 this.buses.add(tempBus);
             }
 
             System.out.println("End Bus Database");
-            
+
         } catch (SQLException e) {
             System.out.println("Cannot access to Bus database");
         }
@@ -213,5 +290,28 @@ public class BusManagementSystemModel {
 //            busesNum.add(busNum);
 //        }
 //    }
+    // Initialize Bus Hours List
+    public void initializeBusHours() {
+
+        int i = 6;
+        while (i < 21) {
+
+            northTraToHmcNo1.add(i + ":30");
+            southDavisToHmcNo2.add(i + ":30");
+            i++;
+
+            northHmcToDavisNo1.add(i + ":00");
+            southHmcToTraNo2.add(i + ":00");
+
+            if (i < 20) {
+                southDavisToHmcNo1.add(i + ":30");
+                northTraToHmcNo2.add(i + ":30");
+
+                i++;
+                southHmcToTraNo1.add(i + ":00");
+                northHmcToDavisNo2.add(i + ":00");
+            }
+        }
+    }
 
 }

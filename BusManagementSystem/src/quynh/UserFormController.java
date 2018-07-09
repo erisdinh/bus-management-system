@@ -8,11 +8,14 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -29,6 +32,9 @@ public class UserFormController implements Initializable {
     private Stage stage;
     private BusManagementSystemModel model;
     private ArrayList<Bus> buses;
+    private ArrayList<String> departure;
+    private ArrayList<String> destination;
+    private ArrayList<String> hours = new ArrayList<>();
 
     @FXML
     private ToggleButton A1;
@@ -143,18 +149,61 @@ public class UserFormController implements Initializable {
         connection = ConnectSQLServer.getAutoConnection();
 
         model = new BusManagementSystemModel();
+        model.initializeBusHours();
         model.getBusDatabase(connection);
 
         ArrayList<Integer> busesNum = model.getBusesNum();
 
+        // Display bus number list in comboBox
         comboBoxBusNum.setItems(FXCollections.observableList(busesNum));
 
+        // Show Bus info after the user choose the bus number
         comboBoxBusNum.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
                 showBusInfo();
             }
         });
 
+        // Add departure into DEPARTURE arraylist
+        departure = new ArrayList<>();
+        departure.add("Trafalgar");
+        departure.add("HMC");
+        departure.add("Davis");
+
+        // Show departure list
+        comboBoxDeparture.setItems(FXCollections.observableArrayList(departure));
+
+        // Using lamda expression
+        // Show Destination list fater changing comboxBox departure
+        comboBoxDeparture.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
+            destination = new ArrayList<String>();
+            if (comboBoxDeparture.equals("")) {
+            } else {
+                for (int i = 0; i < departure.size(); i++) {
+                    String choseDeparture = comboBoxDeparture.getValue();
+                    if (choseDeparture.equals(departure.get(i))) {
+
+                    } else {
+                        destination.add(departure.get(i));
+                    }
+                }
+                comboBoxDestination.setItems(FXCollections.observableArrayList(destination));
+            }
+
+        });
+
+        // Show bus hours list after changing comboBox Time
+        comboBoxDestination.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
+
+            // Clear the selected items after the user changing the departure and destination
+            comboBoxBusTime.setItems(null);
+            String choseDeparture = comboBoxDeparture.getValue();
+            String choseDestination = comboBoxDestination.getValue();
+            if (choseDestination == null) {
+            } else {
+                showBusHours(choseDeparture, choseDestination);
+            }
+        });
     }
 
     public void setStage(Stage stage) {
@@ -177,13 +226,11 @@ public class UserFormController implements Initializable {
         });
     }
 
-    
     // A method to show the selected-bus-num Bus Info
     private void showBusInfo() {
         Bus bus = new Bus();
 
         int busNum = comboBoxBusNum.getValue();
-        System.out.println(busNum);
 
         bus = model.getBusByBusNum(busNum);
         if (bus == null) {
@@ -195,4 +242,46 @@ public class UserFormController implements Initializable {
 
     }
 
+    // Show bus time list in comboBox Time
+    private void showBusHours(String departure, String destination) {
+        hours = new ArrayList<String>();
+
+        // Get hours list depending on departure and destination
+        if (departure.equals("Trafalgar")) {
+            for (int i = 0; i < 8; i++) {
+                hours.add(model.getNorthTraToHmcNo1().get(i));
+                if (i < 7) {
+                    hours.add(model.getNorthTraToHmcNo2().get(i));
+                }
+            }
+        } else if (departure.equals("HMC")) {
+            if (destination.equals("Davis")) {
+                for (int i = 0; i < 8; i++) {
+                    hours.add(model.getNorthHmcToDavisNo1().get(i));
+                    if (i < 7) {
+                        hours.add(model.getNorthHmcToDavisNo2().get(i));
+                    }
+                }
+            } else {
+                for (int i = 0; i < 8; i++) {
+                    hours.add(model.getSouthHmcToTraNo2().get(i));
+                    if (i < 7) {
+                        hours.add(model.getSouthHmcToTraNo1().get(i));
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < 8; i++) {
+                hours.add(model.getSouthDavisToHmcNo2().get(i));
+                if (i < 7) {
+                    hours.add(model.getSouthDavisToHmcNo1().get(i));
+                }
+            }
+        }
+        comboBoxBusTime.setItems(FXCollections.observableArrayList(hours));
+    }
+
+    @FXML
+    private void handleButtonReset(ActionEvent event) {
+    }
 }

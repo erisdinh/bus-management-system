@@ -1,13 +1,17 @@
 package data;
 
+import java.util.ArrayList;
+
 public class Bus {
+
     private int busNum;
     private String licensePlate;
     private String type;
     private int numOfSeat;
-    
-    public Bus() {}
-    
+
+    public Bus() {
+    }
+
     public Bus(int busNum, String licensePlate, String type, int numOfSeat) {
         setBusNum(busNum);
         setLicensePlate(licensePlate);
@@ -46,6 +50,5 @@ public class Bus {
     public void setNumOfSeat(int numOfSeat) {
         this.numOfSeat = numOfSeat;
     }
-    
-    
+
 }
