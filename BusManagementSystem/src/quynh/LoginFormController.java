@@ -31,11 +31,20 @@ import javafx.stage.Stage;
 
 public class LoginFormController implements Initializable {
 
+    private User currentUser;
     private Stage stage;
-    private BusManagementSystemModel busManagementModel;
+    private BusManagementSystemModel model;
     private static Connection connection;
     private static Statement statement;
 
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+    }
+    
     @FXML
     private TextField textfieldID;
     @FXML
@@ -58,7 +67,7 @@ public class LoginFormController implements Initializable {
             // Success connection
             labelConnection.setText("Connection successfully!");
 
-            busManagementModel = new BusManagementSystemModel();
+            model = new BusManagementSystemModel();
 
         } catch (SQLException e) {
             labelConnection.setText("Connection failure!");
@@ -95,7 +104,7 @@ public class LoginFormController implements Initializable {
         String ID = "991486726";
         String pass = "password";
 
-        busManagementModel.getUserDatabase(connection);
+        model.getUserDatabase(connection);
 
         if (ID.equals("") || pass.equals("")) {
 
@@ -105,10 +114,11 @@ public class LoginFormController implements Initializable {
         } else {
 
             // Check the ID and password
-            if (busManagementModel.isUser(ID, pass) == true) {
+            if (model.isUser(ID, pass) == true) {
+                model.getBusDatabase(connection);
                 System.out.println("Sign in");
 
-                busManagementModel.getBusesNum();
+                model.getBusesNum();
 
                 // Close LogIn Form
                 this.stage.close();
@@ -125,11 +135,14 @@ public class LoginFormController implements Initializable {
                 // Set icon
                 stage.getIcons().add(new Image(BusManagementSystem.class.getResourceAsStream("/data/bus.png")));
                 stage.setScene(scene);
-                stage.show();
 
                 // Remember the stage, so can close it later     
                 UserFormController ctrlUserForm = fxmlLoader.getController();
                 ctrlUserForm.setStage(stage);
+                ctrlUserForm.setModel(model);
+                
+                // wait user response within this block
+                stage.showAndWait();
 
             } else {
                 System.out.println("Try again");

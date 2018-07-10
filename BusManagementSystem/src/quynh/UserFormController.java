@@ -2,6 +2,8 @@ package quynh;
 
 import data.Bus;
 import data.ConnectSQLServer;
+import data.User;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.Time;
@@ -14,7 +16,9 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -24,10 +28,13 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class UserFormController implements Initializable {
 
+    private User currentUser = new User();
     private Connection connection;
     private Stage stage;
     private BusManagementSystemModel model;
@@ -35,6 +42,14 @@ public class UserFormController implements Initializable {
     private ArrayList<String> departure;
     private ArrayList<String> destination;
     private ArrayList<String> hours = new ArrayList<>();
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser() {
+        this.currentUser = model.getCurrentUser();
+    }
 
     @FXML
     private ToggleButton A1;
@@ -148,21 +163,26 @@ public class UserFormController implements Initializable {
 
         connection = ConnectSQLServer.getAutoConnection();
 
-        model = new BusManagementSystemModel();
-        model.initializeBusHours();
-        model.getBusDatabase(connection);
-
-        ArrayList<Integer> busesNum = model.getBusesNum();
-
-        // Display bus number list in comboBox
-        comboBoxBusNum.setItems(FXCollections.observableList(busesNum));
-
         // Show Bus info after the user choose the bus number
         comboBoxBusNum.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
-                showBusInfo();
+                if (comboBoxBusNum.getValue() == null) {
+                    int busNum = 0;
+                    showBusInfo(busNum);
+                } else {
+                    int busNum = comboBoxBusNum.getValue();
+                    showBusInfo(busNum);
+                }
             }
         });
+
+        // Initialize bus info (null)
+        labelBusType.setText("");
+        labelNumOfSeat.setText("");
+        labelNumOfAvaiSeat.setText("");
+
+        // Intialize choosing seat
+        labelSeat.setText("");
 
         // Add departure into DEPARTURE arraylist
         departure = new ArrayList<>();
@@ -177,10 +197,10 @@ public class UserFormController implements Initializable {
         // Show Destination list fater changing comboxBox departure
         comboBoxDeparture.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
             destination = new ArrayList<String>();
-            if (comboBoxDeparture.equals("")) {
+            String choseDeparture = comboBoxDeparture.getValue();
+            if (choseDeparture == null) {
             } else {
                 for (int i = 0; i < departure.size(); i++) {
-                    String choseDeparture = comboBoxDeparture.getValue();
                     if (choseDeparture.equals(departure.get(i))) {
 
                     } else {
@@ -197,12 +217,44 @@ public class UserFormController implements Initializable {
 
             // Clear the selected items after the user changing the departure and destination
             comboBoxBusTime.setItems(null);
+
             String choseDeparture = comboBoxDeparture.getValue();
             String choseDestination = comboBoxDestination.getValue();
-            if (choseDestination == null) {
+            if (choseDestination == null || choseDeparture == null) {
             } else {
                 showBusHours(choseDeparture, choseDestination);
             }
+        });
+
+        comboBoxBusTime.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
+
+            // Clear the selected items after the user changing the departure and destination
+            comboBoxBusNum.setItems(null);
+
+            String choseTime = comboBoxBusTime.getValue();
+            String choseDeparture = comboBoxDeparture.getValue();
+            String choseDestination = comboBoxDestination.getValue();
+            if (choseTime == null) {
+            } else {
+                showBusNum(choseDeparture, choseDestination, choseTime);
+                showBusInfo(0);
+            }
+
+        });
+
+        comboBoxBusNum.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
+
+            if (comboBoxBusNum.getItems() == null) {
+            } else {
+                int busNum = comboBoxBusNum.getValue();
+                showBusInfo(busNum);
+            }
+        });
+
+        buttonSeat.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
+            ToggleButton choseTogglebutton = (ToggleButton) buttonSeat.getSelectedToggle();
+            String choseSeat = choseTogglebutton.getId();
+            labelSeat.setText(choseSeat);
         });
     }
 
@@ -226,20 +278,87 @@ public class UserFormController implements Initializable {
         });
     }
 
+    public void setModel(BusManagementSystemModel model) {
+        this.model = model;
+        model.initializeBusHours();
+    }
+
+    @FXML
+    private void handleButtonReset(ActionEvent event) {
+        reset();
+    }
+
+    @FXML
+    private void handleButtonSignOut(ActionEvent event) throws IOException {
+        this.stage.close();
+
+        // Load scence graph from fxml
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("LoginForm.fxml"));
+        Parent root = (Parent) fxmlLoader.load();
+
+        // Create and show about window as modal     
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setTitle("Welcome to Sheridan Bus Management System");
+        // Set icon
+        stage.getIcons().add(new Image(BusManagementSystem.class.getResourceAsStream("/data/bus.png")));
+        stage.setScene(scene);
+        stage.show();
+
+        // Remember the stage, so can close it later     
+        LoginFormController ctrlLoginForm = fxmlLoader.getController();
+        ctrlLoginForm.setStage(stage);
+    }
+
+    @FXML
+    private void handleButtonReserve(ActionEvent event) throws IOException {
+        // Load scence graph from fxml
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ConfirmReservationForm.fxml"));
+        Parent root = (Parent) fxmlLoader.load();
+
+        // Create and show about window as modal     
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setTitle("Confirmation");
+
+        // Set icon
+        stage.getIcons().add(new Image(BusManagementSystem.class.getResourceAsStream("/data/bus.png")));
+        stage.setScene(scene);
+
+        // Remember the stage, so can close it later     
+        ConfirmReservationFormController ctrlConfirmResForm = fxmlLoader.getController();
+        ctrlConfirmResForm.setStage(stage);
+
+        // wait user response within this block
+        stage.showAndWait();
+        reset();
+
+    }
+
     // A method to show the selected-bus-num Bus Info
-    private void showBusInfo() {
-        Bus bus = new Bus();
-
-        int busNum = comboBoxBusNum.getValue();
-
-        bus = model.getBusByBusNum(busNum);
-        if (bus == null) {
-            return;
+    private void showBusInfo(int tempBusNum) {
+        int busNum = tempBusNum;
+        if (tempBusNum == 0) {
+            labelBusType.setText("");
+            labelNumOfSeat.setText("");
+            labelNumOfAvaiSeat.setText("");
         } else {
-            labelBusType.setText(bus.getType());
-            labelNumOfSeat.setText(Integer.toString(bus.getNumOfSeat()));
-        }
+            Bus bus = new Bus();
+            bus = model.getBusByBusNum(busNum);
 
+            if (bus == null) {
+                labelBusType.setText("");
+                labelNumOfSeat.setText("");
+                labelNumOfAvaiSeat.setText("");
+                return;
+            } else {
+                labelBusType.setText(bus.getType());
+                labelNumOfSeat.setText(Integer.toString(bus.getNumOfSeat()));
+                System.out.println(bus.getBusNum());
+            }
+        }
     }
 
     // Show bus time list in comboBox Time
@@ -281,7 +400,55 @@ public class UserFormController implements Initializable {
         comboBoxBusTime.setItems(FXCollections.observableArrayList(hours));
     }
 
-    @FXML
-    private void handleButtonReset(ActionEvent event) {
+    private void reset() {
+        comboBoxDeparture.setItems(null);
+        comboBoxDestination.setItems(null);
+        datePickerDateRes.setValue(null);
+        comboBoxBusTime.setItems(null);
+        comboBoxBusNum.setItems(null);
+        buttonSeat.selectToggle(null);
+    }
+
+    private void showBusNum(String departure, String destination, String time) {
+        ArrayList<Integer> busesNum = new ArrayList<>();
+        int choseTime = Integer.parseInt(String.valueOf(time.charAt(0)));
+
+        if (departure.equals("Trafalgar")) {
+            if (choseTime % 2 == 0) {
+                busesNum.add(2);
+                busesNum.add(4);
+            } else {
+                busesNum.add(1);
+                busesNum.add(3);
+            }
+        } else if (departure.equals("HMC")) {
+            if (destination.equals("Davis")) {
+                if (choseTime % 2 == 0) {
+                    busesNum.add(5);
+                    busesNum.add(7);
+                } else {
+                    busesNum.add(2);
+                    busesNum.add(4);
+                }
+            } else {
+                if (choseTime % 2 != 0) {
+                    busesNum.add(1);
+                    busesNum.add(3);
+                } else {
+                    busesNum.add(6);
+                    busesNum.add(8);
+                }
+            }
+        } else {
+            if (choseTime % 2 == 0) {
+                busesNum.add(6);
+                busesNum.add(8);
+            } else {
+                busesNum.add(5);
+                busesNum.add(7);
+            }
+        }
+
+        comboBoxBusNum.setItems(FXCollections.observableArrayList(busesNum));
     }
 }

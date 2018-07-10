@@ -1,9 +1,7 @@
 package quynh;
 
 import data.User;
-import data.User;
 import data.Bus;
-import data.Departure;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,6 +12,7 @@ import java.util.HashMap;
 
 public class BusManagementSystemModel {
 
+    private User currentUser = new User();
     private ArrayList<User> users;
     private ArrayList<Bus> buses = new ArrayList<Bus>();
     private ArrayList<Integer> busesNum = new ArrayList<Integer>();
@@ -29,6 +28,14 @@ public class BusManagementSystemModel {
     private ArrayList<String> southHmcToTraNo2 = new ArrayList<String>();
     private ArrayList<String> northTraToHmcNo2 = new ArrayList<String>();
     private ArrayList<String> northHmcToDavisNo2 = new ArrayList<String>();
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+    }
 
     public ArrayList<User> getUsers() {
         return users;
@@ -312,6 +319,12 @@ public class BusManagementSystemModel {
                 northHmcToDavisNo2.add(i + ":00");
             }
         }
+    }
+
+    // Put the reservation to database
+    public void reserveToDatabase() {
+        boolean reserveOK;
+
     }
 
 }
