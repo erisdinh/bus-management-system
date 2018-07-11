@@ -250,9 +250,9 @@ public class UserFormController implements Initializable {
 
         // Set labelSeat to notice the user what seat is chose
         buttonSeat.selectedToggleProperty().addListener((ov, oldValue, newValue) -> {
-            
+
             ToggleButton choseTogglebutton = (ToggleButton) buttonSeat.getSelectedToggle();
-            
+
             if (choseTogglebutton == null) {
             } else {
                 String choseSeat = choseTogglebutton.getId();
@@ -321,50 +321,59 @@ public class UserFormController implements Initializable {
 
         int userID = model.getCurrentUser().getId();
         String departure = comboBoxDeparture.getValue();
-        System.out.println(departure);
         String destination = comboBoxDestination.getValue();
-        System.out.println(destination);
-        int busNum = comboBoxBusNum.getValue();
         ToggleButton choseTogglebutton = (ToggleButton) buttonSeat.getSelectedToggle();
-        String seat = choseTogglebutton.getId();
-        Date busResDate = Date.valueOf(datePickerDateRes.getValue());
-        System.out.println(comboBoxBusTime.getValue() + ":00");
-        Time busResTime = Time.valueOf(comboBoxBusTime.getValue() + ":00");
 
-        // Current Date/Time
-        java.util.Date utilDate = new java.util.Date();
-        Date currentDate = new Date(utilDate.getTime());
-        Time currentTime = new Time(utilDate.getTime());
-        System.out.println(currentTime);
-        newBusReservation = new BusReservation(busNum, userID, departure, destination, busNum, seat, busResDate, busResTime, currentDate, currentTime);
-        System.out.println(newBusReservation.getDeparture());
-        System.out.println(newBusReservation.getDestination());
+        // If one of elements in the form is not filled, show a alert
+        if (departure == null || destination == null 
+                || datePickerDateRes.getValue() == null 
+                || comboBoxBusTime.getValue() == null 
+                || comboBoxBusNum.getValue() == null 
+                || buttonSeat.getSelectedToggle() == null) {
+            
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Please enter all information!");
+            alert.showAndWait();
+            
+        } else {
+            
+            int busNum = comboBoxBusNum.getValue();
+            String seat = choseTogglebutton.getId();
+            Date busResDate = Date.valueOf(datePickerDateRes.getValue());
+            Time busResTime = Time.valueOf(comboBoxBusTime.getValue() + ":00");
 
-        model.setNewBusReservation(newBusReservation);
+            // Current Date/Time
+            java.util.Date utilDate = new java.util.Date();
+            Date currentDate = new Date(utilDate.getTime());
+            Time currentTime = new Time(utilDate.getTime());
 
-        // Load scence graph from fxml
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ConfirmReservationForm.fxml"));
-        Parent root = (Parent) fxmlLoader.load();
+            // Store this new reservation in model
+            newBusReservation = new BusReservation(busNum, userID, departure, destination, busNum, seat, busResDate, busResTime, currentDate, currentTime);
 
-        // Create and show about window as modal     
-        Scene scene = new Scene(root);
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Confirmation");
+            model.setNewBusReservation(newBusReservation);
 
-        // Set icon
-        stage.getIcons().add(new Image(BusManagementSystem.class.getResourceAsStream("/data/bus.png")));
-        stage.setScene(scene);
+            // Load scence graph from fxml
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ConfirmReservationForm.fxml"));
+            Parent root = (Parent) fxmlLoader.load();
 
-        // Remember the stage, so can close it later     
-        ConfirmReservationFormController ctrlConfirmResForm = fxmlLoader.getController();
-        ctrlConfirmResForm.setModel(model);
-        ctrlConfirmResForm.setStage(stage);
+            // Create and show about window as modal     
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Confirmation");
 
-        // wait user response within this block
-        stage.showAndWait();
-        reset();
+            // Set icon
+            stage.getIcons().add(new Image(BusManagementSystem.class.getResourceAsStream("/data/bus.png")));
+            stage.setScene(scene);
 
+            // Remember the stage, so can close it later     
+            ConfirmReservationFormController ctrlConfirmResForm = fxmlLoader.getController();
+            ctrlConfirmResForm.setModel(model);
+            ctrlConfirmResForm.setStage(stage);
+
+            // wait user response within this block
+            stage.showAndWait();
+            reset();
+        }
     }
 
     // A method to show the selected-bus-num Bus Info

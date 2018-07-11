@@ -14,8 +14,7 @@ public class User {
     private String homeCampus;
     private String accType;
 
-    public User() {
-    }
+    public User() {}
 
     public User(int id, String pass, String accType, String name, Date dob, String phoneNum, String mail, String homeCampus) {
         setId(id);

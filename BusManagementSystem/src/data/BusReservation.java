@@ -7,26 +7,27 @@ import java.sql.Time;
 import java.sql.Date;
 
 public class BusReservation {
-    
+
     private int resNum;
     private int userID;
-    
+
     private String departure;
     private String destination;
-    
+
     private int busNum;
     private String seat;
-    
+
     // Date and Time of the reservated bus
     private Date busResDate;
     private Time busResTime;
-    
+
     // Date and Time that the user reservate the bus
     private Date userResDate;
     private Time userResTime;
-    
-    public BusReservation() {}
-    
+
+    public BusReservation() {
+    }
+
     public BusReservation(int resNum, int userID, String departure, String destination, int busNum, String seat, Date busResDate, Time busResTime, Date userResDate, Time userResTime) {
         setResNum(resNum);
         setUserID(userID);
@@ -76,8 +77,6 @@ public class BusReservation {
         this.destination = destination;
     }
 
-    
-    
     public int getBusNum() {
         return busNum;
     }
@@ -125,6 +124,5 @@ public class BusReservation {
     public void setUserResTime(Time userResTime) {
         this.userResTime = userResTime;
     }
-    
-    
+
 }

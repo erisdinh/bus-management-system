@@ -367,42 +367,24 @@ public class BusManagementSystemModel {
         boolean reserveOK = false;
 
         try {
-            System.out.println("Prepared Statement");
+            
+            // Prepare a statement to execute
             PreparedStatement statement = connection.prepareStatement("INSERT INTO BusReservation (UserID, Departure, Destination, BusNum, Seat, BusResDate, BusResTime, UserResDate, UserResTime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
             
+            // Pass all the reservation information into each column in the database to the statement
             statement.setInt(1, currentUser.getId());
-            System.out.println(currentUser.getId());
-           
             statement.setString(2, newBusReservation.getDeparture());
-            System.out.println(newBusReservation.getDeparture());
-            
             statement.setString(3, newBusReservation.getDestination());
-            System.out.println(newBusReservation.getDestination());
-            
             statement.setInt(4, newBusReservation.getBusNum());
-            System.out.println(newBusReservation.getBusNum());
-            
             statement.setString(5, newBusReservation.getSeat());
-            System.out.println(newBusReservation.getSeat());
-            
             statement.setDate(6, newBusReservation.getBusResDate());
-            System.out.println(newBusReservation.getBusResDate());
-            
             statement.setTime(7, newBusReservation.getBusResTime());
-            System.out.println(newBusReservation.getBusResTime());
-            
             statement.setDate(8, newBusReservation.getUserResDate());
-            System.out.println(newBusReservation.getUserResDate());
-            
             statement.setTime(9, newBusReservation.getUserResTime());
-            System.out.println(newBusReservation.getUserResTime());
-            
             statement.executeUpdate();
-            System.out.println("Executed");
             
             reserveOK = true;
         } catch (SQLException e) {
-            e.printStackTrace();
             System.out.println("Cannot put the reservation to Database");
         }
         return reserveOK;

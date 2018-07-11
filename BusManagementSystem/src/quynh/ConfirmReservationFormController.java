@@ -40,7 +40,6 @@ public class ConfirmReservationFormController implements Initializable {
     private Button buttonConfirm;
     @FXML
     private Button buttonCancel;
-    private Label labelReservationNum;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -84,8 +83,6 @@ public class ConfirmReservationFormController implements Initializable {
     }
 
     public void showReservationInfo() {
-        int resNum = model.getNewResNum();;
-        labelReservationNum.setText(Integer.toString(resNum));
         labelDeparture.setText(model.getNewBusReservation().getDeparture());
         labelDestination.setText(model.getNewBusReservation().getDestination());
         labelDate.setText(model.getNewBusReservation().getBusResDate().toString());
