@@ -16,6 +16,7 @@
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="301.0" minWidth="10.0" prefWidth="200.0" />
         </columnConstraints>
         <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -24,62 +25,72 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label text="Departure:">
+            <Label text="Departure:" GridPane.rowIndex="1">
                <font>
                   <Font name="Bodoni MT Condensed" size="25.0" />
                </font>
             </Label>
-            <Label text="Destination:" GridPane.rowIndex="1">
+            <Label text="Destination:" GridPane.rowIndex="2">
                <font>
                   <Font name="Bodoni MT Condensed" size="25.0" />
                </font>
             </Label>
-            <Label text="Date:" GridPane.rowIndex="2">
+            <Label text="Date:" GridPane.rowIndex="3">
                <font>
                   <Font name="Bodoni MT Condensed" size="25.0" />
                </font>
             </Label>
-            <Label text="Time:" GridPane.rowIndex="3">
+            <Label text="Time:" GridPane.rowIndex="4">
                <font>
                   <Font name="Bodoni MT Condensed" size="25.0" />
                </font>
             </Label>
-            <Label text="Bus No.:" GridPane.rowIndex="4">
+            <Label text="Bus No.:" GridPane.rowIndex="5">
                <font>
                   <Font name="Bodoni MT Condensed" size="25.0" />
                </font>
             </Label>
-            <Label text="Seat:" GridPane.rowIndex="5">
+            <Label text="Seat:" GridPane.rowIndex="6">
                <font>
                   <Font name="Bodoni MT Condensed" size="25.0" />
                </font>
             </Label>
-            <Label fx:id="labelDeparture" text="Departure" GridPane.columnIndex="1">
+            <Label fx:id="labelDeparture" text="Departure" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <font>
                   <Font name="Arial" size="15.0" />
                </font>
             </Label>
-            <Label fx:id="labelDestination" text="Destination" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Label fx:id="labelDestination" text="Destination" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <font>
                   <Font name="Arial" size="15.0" />
                </font>
             </Label>
-            <Label fx:id="labelDate" text="Date" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <Label fx:id="labelDate" text="Date" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <font>
                   <Font name="Arial" size="15.0" />
                </font>
             </Label>
-            <Label fx:id="labelTime" text="Time" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <Label fx:id="labelTime" text="Time" GridPane.columnIndex="1" GridPane.rowIndex="4">
                <font>
                   <Font name="Arial" size="15.0" />
                </font>
             </Label>
-            <Label fx:id="labelBusNum" text="Bus No." GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <Label fx:id="labelBusNum" text="Bus No." GridPane.columnIndex="1" GridPane.rowIndex="5">
                <font>
                   <Font name="Arial" size="15.0" />
                </font>
             </Label>
-            <Label fx:id="labelSeat" text="Seat" GridPane.columnIndex="1" GridPane.rowIndex="5">
+            <Label fx:id="labelSeat" text="Seat" GridPane.columnIndex="1" GridPane.rowIndex="6">
+               <font>
+                  <Font name="Arial" size="15.0" />
+               </font>
+            </Label>
+            <Label text="Reservation Number:">
+               <font>
+                  <Font name="Bodoni MT Condensed" size="25.0" />
+               </font>
+            </Label>
+            <Label fx:id="labelReservationNum" text="Reservation Number" GridPane.columnIndex="1">
                <font>
                   <Font name="Arial" size="15.0" />
                </font>

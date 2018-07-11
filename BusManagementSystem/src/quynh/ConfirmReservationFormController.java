@@ -1,6 +1,9 @@
 package quynh;
 
+import data.BusReservation;
 import java.net.URL;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -13,9 +16,10 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 public class ConfirmReservationFormController implements Initializable {
-    
+  
     private Stage stage = new Stage();
-    private BusManagementSystemModel model;
+    private BusManagementSystemModel model = new BusManagementSystemModel();
+    private BusReservation newBusReservation;  
     
     @FXML
     private Label labelDeparture;
@@ -33,11 +37,11 @@ public class ConfirmReservationFormController implements Initializable {
     private Button buttonConfirm;
     @FXML
     private Button buttonCancel;
+    @FXML
+    private Label labelReservationNum;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        model = new BusManagementSystemModel();
-        
     }
     
     public void setStage(Stage stage) {
@@ -47,9 +51,20 @@ public class ConfirmReservationFormController implements Initializable {
                 stage.close();
         });
     }
+    
+    public void setModel(BusManagementSystemModel model) {
+        this.model = model;
+        showReservationInfo();
+    }
 
     @FXML
     private void handleButtonConfirm(ActionEvent event) {
+        
+        // Current Date
+        java.util.Date utilDate = new java.util.Date(); 
+        Date currentDate = new Date(utilDate.getTime());
+        Time currentTime = new Time(utilDate.getTime());
+        
         stage.close();
         model.reserveToDatabase();
     }
@@ -57,6 +72,18 @@ public class ConfirmReservationFormController implements Initializable {
     @FXML
     private void handleButtonCancel(ActionEvent event) {
         stage.close();
+    }
+    
+    public void showReservationInfo() {
+        int resNum = model.getNewResNum();;
+        labelReservationNum.setText(Integer.toString(resNum));
+        labelDeparture.setText(model.getNewBusReservation().getDeparture());
+        labelDestination.setText(model.getNewBusReservation().getDestination());
+        labelDate.setText(model.getNewBusReservation().getBusResDate().toString());
+        labelTime.setText(model.getNewBusReservation().getBusResTime().toString());
+        labelBusNum.setText(Integer.toString(model.getNewBusReservation().getBusNum()));
+        labelSeat.setText(model.getNewBusReservation().getSeat());
+        
     }
     
 }

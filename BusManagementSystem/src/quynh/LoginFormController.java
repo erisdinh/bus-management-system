@@ -101,12 +101,12 @@ public class LoginFormController implements Initializable {
 
 //        String ID = textfieldID.getText();
 //        String pass = textfieldPass.getText();
-        String ID = "991486726";
+        int ID = Integer.parseInt("991486726");
         String pass = "password";
 
         model.getUserDatabase(connection);
-
-        if (ID.equals("") || pass.equals("")) {
+//        ID.equals("") || pass.equals("")
+        if (ID == 0) {
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Please enter your ID and Password!");
             Optional<ButtonType> result = alert.showAndWait();
@@ -117,8 +117,6 @@ public class LoginFormController implements Initializable {
             if (model.isUser(ID, pass) == true) {
                 model.getBusDatabase(connection);
                 System.out.println("Sign in");
-
-                model.getBusesNum();
 
                 // Close LogIn Form
                 this.stage.close();

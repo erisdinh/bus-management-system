@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class User {
 
-    private String id;
+    private int id;
     private String pass;
     private String name;
     private Date dob;
@@ -17,7 +17,7 @@ public class User {
     public User() {
     }
 
-    public User(String id, String pass, String accType, String name, Date dob, String phoneNum, String mail, String homeCampus) {
+    public User(int id, String pass, String accType, String name, Date dob, String phoneNum, String mail, String homeCampus) {
         setId(id);
         setPass(pass);
         setName(name);
@@ -28,11 +28,11 @@ public class User {
         setHomeCampus(homeCampus);
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

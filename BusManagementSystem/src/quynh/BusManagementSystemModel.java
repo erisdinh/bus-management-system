@@ -1,22 +1,23 @@
 package quynh;
 
-import data.User;
-import data.Bus;
+import data.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 public class BusManagementSystemModel {
 
     private User currentUser = new User();
     private ArrayList<User> users;
-    private ArrayList<Bus> buses = new ArrayList<Bus>();
-    private ArrayList<Integer> busesNum = new ArrayList<Integer>();
-
+    private ArrayList<Bus> buses;
+    private ArrayList<BusReservation> busReservations = new ArrayList<BusReservation>();
+    private BusReservation newBusReservation = new BusReservation();
+    
     // Bus 1
     private ArrayList<String> northTraToHmcNo1 = new ArrayList<String>();
     private ArrayList<String> northHmcToDavisNo1 = new ArrayList<String>();
@@ -53,19 +54,23 @@ public class BusManagementSystemModel {
         this.buses = buses;
     }
 
-    public ArrayList<Integer> getBusesNum() {
-
-        for (int i = 0; i < this.buses.size(); i++) {
-            int busNum = buses.get(i).getBusNum();
-            busesNum.add(busNum);
-        }
-
-        return busesNum;
+    public ArrayList<BusReservation> getBusReservations() {
+        return busReservations;
     }
 
-    public void setBusesNum(ArrayList<Integer> busesNum) {
-        this.busesNum = busesNum;
+    public void setBusReservations(ArrayList<BusReservation> busReservations) {
+        this.busReservations = busReservations;
     }
+
+    public BusReservation getNewBusReservation() {
+        return newBusReservation;
+    }
+
+    public void setNewBusReservation(BusReservation newBusReservation) {
+        this.newBusReservation = newBusReservation;
+    }
+    
+    
 
     public ArrayList<String> getNorthTraToHmcNo1() {
         return northTraToHmcNo1;
@@ -130,7 +135,7 @@ public class BusManagementSystemModel {
     public void setNorthHmcToDavisNo2(ArrayList<String> northHmcToDavisNo2) {
         this.northHmcToDavisNo2 = northHmcToDavisNo2;
     }
-
+    
     public BusManagementSystemModel() {
     }
 
@@ -151,7 +156,7 @@ public class BusManagementSystemModel {
             while (resultSet.next()) {
 
                 // Retrieve each admin data
-                String ID = resultSet.getString("ID").trim();
+                int ID = resultSet.getInt("ID");
                 System.out.println(ID);
                 String pass = resultSet.getString("Password").trim();
                 String accType = resultSet.getString("AccType");
@@ -176,57 +181,9 @@ public class BusManagementSystemModel {
 
         return this.users;
     }
-
-    // Get User By ID
-    public User getUserByID(String ID) {
-        User user = new User();
-        User tempUser = new User();
-
-        // Check whether there is an admin having the same ID or not
-        for (int i = 0; i < this.users.size(); i++) {
-
-            // Get ith User and its ID
-            tempUser = users.get(i);
-            String tempID = tempUser.getId();
-
-            // If there is an admin having the same ID, return this admin
-            if (ID.equals(tempID)) {
-                return user = tempUser;
-            }
-        }
-
-        return user;
-    }
-
-    // Check the admin with password (Sign in)
-    public boolean isUser(String ID, String password) {
-
-        boolean isUser = false;
-
-        // Get the user that have the same ID then store its password in tempPass
-        User tempUser = new User();
-        tempUser = getUserByID(ID);
-
-        if (tempUser.getId() != null) {
-
-            String tempPass = tempUser.getPass();
-
-            // If the password is the same, return true
-            if (password.equals(tempPass)) {
-                isUser = true;
-            }
-
-        } else {
-
-            isUser = false;
-        }
-
-        return isUser;
-    }
-
-    // Get Bus list from database
+    
+        // Get Bus list from database
     public ArrayList<Bus> getBusDatabase(Connection connection) {
-
         try {
 
             System.out.println("Run Bus Database");
@@ -237,6 +194,8 @@ public class BusManagementSystemModel {
             // Retrieve Bus table
             ResultSet resultSet = statement.executeQuery("SELECT * FROM Bus");
 
+            buses = new ArrayList<Bus>();
+            
             // Retrieve bus data from database
             while (resultSet.next()) {
 
@@ -259,6 +218,91 @@ public class BusManagementSystemModel {
 
         return this.buses;
     }
+    
+    public ArrayList<BusReservation> getBusReservationDatabase(Connection connection) {
+        
+        try {
+            
+            System.out.println("Run Bus Reservation Database");
+            
+            Statement statement = connection.createStatement();
+            
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM BusReservation");
+            
+            busReservations = new ArrayList<BusReservation>();
+            
+            while(resultSet.next()) {
+                
+                int resNum = resultSet.getInt("ResNum");
+                int userID = resultSet.getInt("UserID");
+                String departure = resultSet.getString("Departure").trim();
+                String destination = resultSet.getString("Destination").trim();
+                int busNum = resultSet.getInt("BusNum");
+                String seat = resultSet.getString("Seat").trim();
+                Date busResDate = resultSet.getDate("BusResDate");
+                Time busResTime = resultSet.getTime("BusResTime");
+                Date userResDate = resultSet.getDate("UserResDate");
+                Time userResTime = resultSet.getTime("userResTime");
+                
+                BusReservation tempBusReservation = new BusReservation(resNum, userID, departure, destination, busNum, seat, busResDate, busResTime, userResDate, userResTime);
+                
+                busReservations.add(tempBusReservation);
+            }
+            
+            System.out.println("End Bus Reservation Database");
+        } catch (SQLException e) {
+            System.out.println("Cannot connect to Bus Reservation Database");
+        }
+        
+        return this.busReservations;
+    }
+
+    // Get User By ID
+    public User getUserByID(int ID) {
+        User user = new User();
+        User tempUser = new User();
+
+        // Check whether there is an admin having the same ID or not
+        for (int i = 0; i < this.users.size(); i++) {
+
+            // Get ith User and its ID
+            tempUser = users.get(i);
+            int tempID = tempUser.getId();
+
+            // If there is an admin having the same ID, return this admin
+            if (ID == tempID) {
+                return user = tempUser;
+            }
+        }
+
+        return user;
+    }
+
+    // Check the admin with password (Sign in)
+    public boolean isUser(int ID, String password) {
+
+        boolean isUser = false;
+
+        // Get the user that have the same ID then store its password in tempPass
+        User tempUser = new User();
+        tempUser = getUserByID(ID);
+        String tempID = Integer.toString(tempUser.getId());
+        if (tempID != null) {
+
+            String tempPass = tempUser.getPass();
+
+            // If the password is the same, return true
+            if (password.equals(tempPass)) {
+                isUser = true;
+            }
+
+        } else {
+
+            isUser = false;
+        }
+
+        return isUser;
+    }
 
     // Get bus data by Bus number
     public Bus getBusByBusNum(int busNum) {
@@ -279,24 +323,6 @@ public class BusManagementSystemModel {
         return bus;
     }
 
-    // populate the category in comboBox
-//    public void populateBusesNum() {
-//        
-//        // Using HashMap to get unique busNum
-//        HashMap<Integer, Integer> list = new HashMap<>();
-//        int key = 0;
-//        for (int i = 0; i < this.buses.size(); i++) {
-//            int busNum = this.buses.get(i).getBusNumber();
-//            if (!list.containsKey(busNum)) {
-//                list.put(busNum, key);
-//                key++;
-//            } else {
-//            }
-//        }
-//        for (int busNum : list.keySet()) {
-//            busesNum.add(busNum);
-//        }
-//    }
     // Initialize Bus Hours List
     public void initializeBusHours() {
 
@@ -320,7 +346,23 @@ public class BusManagementSystemModel {
             }
         }
     }
-
+    
+    // Get the last row of reservations
+    public BusReservation getLastBusReservation() {
+        BusReservation lastBusReservation = new BusReservation();
+        lastBusReservation = busReservations.get(busReservations.size() - 1);
+        System.out.println(lastBusReservation.getResNum());
+        return lastBusReservation;
+    }
+    
+    public int getNewResNum() {
+        BusReservation lastBusReservation = new BusReservation();
+        lastBusReservation = getLastBusReservation();
+        
+        int newResNum = lastBusReservation.getResNum()+ 1;
+        return newResNum;
+    }
+    
     // Put the reservation to database
     public void reserveToDatabase() {
         boolean reserveOK;
