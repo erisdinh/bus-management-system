@@ -115,6 +115,9 @@ public class LoginFormController implements Initializable {
 
             // Check the ID and password
             if (model.isUser(ID, pass) == true) {
+                User currentUser = new User();
+                currentUser = model.getUserByID(ID);
+                model.setCurrentUser(currentUser);
                 model.getBusDatabase(connection);
                 System.out.println("Sign in");
 
