@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 
 public class ConfirmReservationFormController implements Initializable {
 
+    private boolean cancel;
     private Connection connection;
     private Stage stage = new Stage();
     private BusManagementSystemModel model = new BusManagementSystemModel();
@@ -40,6 +41,14 @@ public class ConfirmReservationFormController implements Initializable {
     private Button buttonConfirm;
     @FXML
     private Button buttonCancel;
+
+    public boolean isCancel() {
+        return cancel;
+    }
+
+    public void setCancel(boolean cancel) {
+        this.cancel = cancel;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -79,6 +88,7 @@ public class ConfirmReservationFormController implements Initializable {
 
     @FXML
     private void handleButtonCancel(ActionEvent event) {
+        setCancel(true);
         stage.close();
     }
 

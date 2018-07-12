@@ -10,6 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Observable;
+import javafx.collections.ObservableList;
 
 public class BusManagementSystemModel {
 
@@ -18,6 +20,7 @@ public class BusManagementSystemModel {
     private ArrayList<Bus> buses;
     private ArrayList<BusReservation> busReservations = new ArrayList<BusReservation>();
     private BusReservation newBusReservation = new BusReservation();
+    private ArrayList<BusReservation> userBusReservations;
 
     // Bus 1
     private ArrayList<String> northTraToHmcNo1 = new ArrayList<String>();
@@ -62,7 +65,7 @@ public class BusManagementSystemModel {
     public void setBusReservations(ArrayList<BusReservation> busReservations) {
         this.busReservations = busReservations;
     }
-
+    
     public BusReservation getNewBusReservation() {
         return newBusReservation;
     }
@@ -133,9 +136,6 @@ public class BusManagementSystemModel {
 
     public void setNorthHmcToDavisNo2(ArrayList<String> northHmcToDavisNo2) {
         this.northHmcToDavisNo2 = northHmcToDavisNo2;
-    }
-
-    public BusManagementSystemModel() {
     }
 
     // Get User list from Database
@@ -389,5 +389,23 @@ public class BusManagementSystemModel {
         }
         return reserveOK;
     }
-
+    
+    // get currrentUserID Bus Reservation List
+    public ArrayList<BusReservation> getUserReservations(int userID) {
+        int tempUserID;
+        
+        System.out.println(userID);
+        
+        userBusReservations = new ArrayList<>();
+        
+        for(int i = 0; i < busReservations.size(); i++) {
+            tempUserID = busReservations.get(i).getUserID();
+            System.out.println(tempUserID);
+            if(userID == tempUserID) {
+                userBusReservations.add(busReservations.get(i));
+            }
+        }
+     
+        return userBusReservations;
+    }
 }

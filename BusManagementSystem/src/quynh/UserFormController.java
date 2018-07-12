@@ -16,7 +16,9 @@ import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -29,8 +31,13 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -152,6 +159,32 @@ public class UserFormController implements Initializable {
     private Button buttonReserve;
     @FXML
     private Button buttonReset;
+    @FXML
+    private TextField textfieldSearch;
+    @FXML
+    private ComboBox<?> comboBoxSearchBy;
+    @FXML
+    private Button buttonSearch;
+    @FXML
+    private TableView<BusReservation> tableReserveation;
+    @FXML
+    private TableColumn<BusReservation, Integer> columnResNum;
+    @FXML
+    private TableColumn<BusReservation, String> columnDeparture;
+    @FXML
+    private TableColumn<BusReservation, String> columnDestination;
+    @FXML
+    private TableColumn<BusReservation, Integer> columnBusNum;
+    @FXML
+    private TableColumn<BusReservation, String> columnSeat;
+    @FXML
+    private TableColumn<BusReservation, Date> columnDate;
+    @FXML
+    private TableColumn<BusReservation, Time> columnTime;
+    @FXML
+    private Button buttonSelect;
+    @FXML
+    private Tab tabReservationHistory;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -372,7 +405,11 @@ public class UserFormController implements Initializable {
 
             // wait user response within this block
             stage.showAndWait();
-            reset();
+            if (ctrlConfirmResForm.isCancel()) {
+                
+            } else {
+                reset();
+            }
         }
     }
 
@@ -480,7 +517,6 @@ public class UserFormController implements Initializable {
             }
         } else if (departure.equals("HMC")) {
             if (destination.equals("Davis")) {
-                System.out.println(choseTime % 2);
                 if (choseTime % 2 == 0) {
                     busesNum.add(5);
                     busesNum.add(7);
@@ -509,5 +545,48 @@ public class UserFormController implements Initializable {
         }
 
         comboBoxBusNum.setItems(FXCollections.observableArrayList(busesNum));
+    }
+
+    @FXML
+    private void handleButtonSearch(ActionEvent event) {
+    }
+
+    @FXML
+    private void handleButtonSelect(ActionEvent event) {
+    }
+    
+    private void showUserBusResevations() {
+        
+        // Clear the observable list
+        ObservableList<BusReservation> items = tableReserveation.getItems();
+        items.clear();
+        
+        // Get all user reservation list
+        ArrayList<BusReservation> userReservations = new ArrayList<>();
+        int userID = model.getCurrentUser().getId();
+        userReservations = model.getUserReservations(userID);
+        
+        // Pass user reservation list to an observable list
+        for(int i = 0; i < userReservations.size(); i++) {
+            items.add(userReservations.get(i));
+        }
+        
+        // Set items to the tableView
+        tableReserveation.setItems(items);
+
+        columnResNum.setCellValueFactory(new PropertyValueFactory<BusReservation, Integer>("resNum"));
+        columnDeparture.setCellValueFactory(new PropertyValueFactory<BusReservation, String>("departure"));
+        columnDestination.setCellValueFactory(new PropertyValueFactory<BusReservation, String>("destination"));
+        columnBusNum.setCellValueFactory(new PropertyValueFactory<BusReservation, Integer>("busNum"));
+        columnSeat.setCellValueFactory(new PropertyValueFactory<BusReservation, String>("seat"));
+        columnDate.setCellValueFactory(new PropertyValueFactory<BusReservation, Date>("busResDate"));
+        columnTime.setCellValueFactory(new PropertyValueFactory<BusReservation, Time>("busResTime"));
+        
+    }
+
+    @FXML
+    private void handleReservationHistory(Event event) {
+        model.getBusDatabase(connection);
+        showUserBusResevations();
     }
 }
