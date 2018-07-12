@@ -160,10 +160,6 @@ public class UserFormController implements Initializable {
     @FXML
     private Button buttonReset;
     @FXML
-    private TextField textfieldSearch;
-    @FXML
-    private ComboBox<?> comboBoxSearchBy;
-    @FXML
     private Button buttonSearch;
     @FXML
     private TableView<BusReservation> tableReserveation;
@@ -182,9 +178,25 @@ public class UserFormController implements Initializable {
     @FXML
     private TableColumn<BusReservation, Time> columnTime;
     @FXML
+    private TableColumn<BusReservation, String> columnStatus;
+    @FXML
     private Button buttonSelect;
     @FXML
     private Tab tabReservationHistory;
+    @FXML
+    private ComboBox<Integer> comboBoxSearchBusNum;
+    @FXML
+    private ComboBox<String> comboxBoxSearchDeparture;
+    @FXML
+    private ComboBox<String> comboBoxSearchDestination;
+    @FXML
+    private DatePicker datePickerSearchDate;
+    @FXML
+    private ComboBox<String> comboBoxSearchTime;
+    @FXML
+    private ComboBox<String> comboBoxSearchStatus;
+    @FXML
+    private TextField textfieldSearchResNum;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -323,7 +335,7 @@ public class UserFormController implements Initializable {
 
     @FXML
     private void handleButtonReset(ActionEvent event) {
-        reset();
+        resetReserveForm();
     }
 
     @FXML
@@ -358,19 +370,22 @@ public class UserFormController implements Initializable {
         ToggleButton choseTogglebutton = (ToggleButton) buttonSeat.getSelectedToggle();
 
         // If one of elements in the form is not filled, show a alert
-        if (departure == null || destination == null 
-                || datePickerDateRes.getValue() == null 
-                || comboBoxBusTime.getValue() == null 
-                || comboBoxBusNum.getValue() == null 
+        if (departure == null || destination == null
+                || datePickerDateRes.getValue() == null
+                || comboBoxBusTime.getValue() == null
+                || comboBoxBusNum.getValue() == null
                 || buttonSeat.getSelectedToggle() == null) {
-            
+
             Alert alert = new Alert(Alert.AlertType.ERROR, "Please enter all information!");
             alert.showAndWait();
-            
+
         } else {
-            
+
             int busNum = comboBoxBusNum.getValue();
             String seat = choseTogglebutton.getId();
+            String status = "On going";
+            
+            // Date/Time reserve the bus
             Date busResDate = Date.valueOf(datePickerDateRes.getValue());
             Time busResTime = Time.valueOf(comboBoxBusTime.getValue() + ":00");
 
@@ -380,7 +395,7 @@ public class UserFormController implements Initializable {
             Time currentTime = new Time(utilDate.getTime());
 
             // Store this new reservation in model
-            newBusReservation = new BusReservation(busNum, userID, departure, destination, busNum, seat, busResDate, busResTime, currentDate, currentTime);
+            newBusReservation = new BusReservation(busNum, userID, departure, destination, busNum, seat, busResDate, busResTime, currentDate, currentTime, status);
 
             model.setNewBusReservation(newBusReservation);
 
@@ -406,9 +421,10 @@ public class UserFormController implements Initializable {
             // wait user response within this block
             stage.showAndWait();
             if (ctrlConfirmResForm.isCancel()) {
-                
+
             } else {
-                reset();
+                model.updateAllFromDatabase(connection);
+                resetReserveForm();
             }
         }
     }
@@ -477,7 +493,7 @@ public class UserFormController implements Initializable {
     }
 
     // Reset the Bus Reservation Form
-    private void reset() {
+    private void resetReserveForm() {
         comboBoxDeparture.setItems(null);
         comboBoxDestination.setItems(null);
         datePickerDateRes.setValue(null);
@@ -549,28 +565,40 @@ public class UserFormController implements Initializable {
 
     @FXML
     private void handleButtonSearch(ActionEvent event) {
-    }
-
-    @FXML
-    private void handleButtonSelect(ActionEvent event) {
-    }
-    
-    private void showUserBusResevations() {
         
         // Clear the observable list
         ObservableList<BusReservation> items = tableReserveation.getItems();
         items.clear();
         
-        // Get all user reservation list
-        ArrayList<BusReservation> userReservations = new ArrayList<>();
-        int userID = model.getCurrentUser().getId();
-        userReservations = model.getUserReservations(userID);
+//        Time time = Time.valueOf(comboBoxSearchTime.getValue() + ":00");
         
-        // Pass user reservation list to an observable list
-        for(int i = 0; i < userReservations.size(); i++) {
-            items.add(userReservations.get(i));
+        ArrayList<BusReservation> result = new ArrayList<>();
+        result = model.getUserReservations(model.getCurrentUser().getId());
+        
+        if (!textfieldSearchResNum.getText().equals("")) {
+            int resNum = Integer.parseInt(textfieldSearchResNum.getText());
+            System.out.println(resNum);
+            result = model.searchByResNum(result, resNum);
+        }
+        if (!(comboxBoxSearchDeparture.getValue() == null)) {
+            String departure = comboxBoxSearchDeparture.getValue();
+            result = model.searchByDeparture(result, departure);
+        }
+        if (!(comboBoxSearchDestination.getValue() == null)) {
+            String destination = comboBoxDestination.getValue();
+            result = model.searchByDestination(result, destination);
+        }
+        if (!(datePickerSearchDate.getValue() == null)) {
+            Date date = Date.valueOf(datePickerSearchDate.getValue());
+            result = model.searchByDate(result, date);
         }
         
+        // Pass result list to an observable list
+        for (int i = 0; i < result.size(); i++) {
+            items.add(result.get(i));
+            System.out.println(result.get(i).getResNum());
+        }
+
         // Set items to the tableView
         tableReserveation.setItems(items);
 
@@ -581,12 +609,59 @@ public class UserFormController implements Initializable {
         columnSeat.setCellValueFactory(new PropertyValueFactory<BusReservation, String>("seat"));
         columnDate.setCellValueFactory(new PropertyValueFactory<BusReservation, Date>("busResDate"));
         columnTime.setCellValueFactory(new PropertyValueFactory<BusReservation, Time>("busResTime"));
+        columnStatus.setCellValueFactory(new PropertyValueFactory<BusReservation, String>("status"));
+
         
     }
 
     @FXML
+    private void handleButtonSelect(ActionEvent event) {
+    }
+
+    private void InitialUserBusResevations() {
+        resetHistoryForm();
+        // Clear the observable list
+        ObservableList<BusReservation> items = tableReserveation.getItems();
+        items.clear();
+
+        // Get all user reservation list
+        ArrayList<BusReservation> userReservations = new ArrayList<>();
+        int userID = model.getCurrentUser().getId();
+        userReservations = model.getUserReservations(userID);
+
+        // Pass user reservation list to an observable list
+        for (int i = 0; i < userReservations.size(); i++) {
+            items.add(userReservations.get(i));
+        }
+
+        // Set items to the tableView
+        tableReserveation.setItems(items);
+
+        columnResNum.setCellValueFactory(new PropertyValueFactory<BusReservation, Integer>("resNum"));
+        columnDeparture.setCellValueFactory(new PropertyValueFactory<BusReservation, String>("departure"));
+        columnDestination.setCellValueFactory(new PropertyValueFactory<BusReservation, String>("destination"));
+        columnBusNum.setCellValueFactory(new PropertyValueFactory<BusReservation, Integer>("busNum"));
+        columnSeat.setCellValueFactory(new PropertyValueFactory<BusReservation, String>("seat"));
+        columnDate.setCellValueFactory(new PropertyValueFactory<BusReservation, Date>("busResDate"));
+        columnTime.setCellValueFactory(new PropertyValueFactory<BusReservation, Time>("busResTime"));
+        columnStatus.setCellValueFactory(new PropertyValueFactory<BusReservation, String>("status"));
+
+    }
+
+    // When the user click to see Reservation History -> Initialize the histpry form
+    // Show the history in a table
+    @FXML
     private void handleReservationHistory(Event event) {
         model.getBusDatabase(connection);
-        showUserBusResevations();
+        InitialUserBusResevations();
+        comboxBoxSearchDeparture.setItems(FXCollections.observableArrayList(this.departure));
+    }
+    
+    private void resetHistoryForm() {
+        textfieldSearchResNum.setText(null);
+        comboxBoxSearchDeparture.setItems(null);
+        comboBoxSearchDestination.setItems(null);
+        datePickerSearchDate.setValue(null);
+        comboBoxSearchStatus.setItems(null);
     }
 }

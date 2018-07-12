@@ -24,11 +24,14 @@ public class BusReservation {
     // Date and Time that the user reservate the bus
     private Date userResDate;
     private Time userResTime;
+    
+    // Status of the reservation
+    private String status;
 
     public BusReservation() {
     }
 
-    public BusReservation(int resNum, int userID, String departure, String destination, int busNum, String seat, Date busResDate, Time busResTime, Date userResDate, Time userResTime) {
+    public BusReservation(int resNum, int userID, String departure, String destination, int busNum, String seat, Date busResDate, Time busResTime, Date userResDate, Time userResTime, String status) {
         setResNum(resNum);
         setUserID(userID);
         setDeparture(departure);
@@ -39,10 +42,7 @@ public class BusReservation {
         setBusResTime(busResTime);
         setUserResDate(userResDate);
         setUserResTime(userResTime);
-    }
-
-    public BusReservation(int i, int userID, String departure, String destination, int busNum, java.sql.Date busResDate, Time busResTime, java.sql.Date currentDate, Time currentTime) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setStatus(status);
     }
 
     public int getResNum() {
@@ -123,6 +123,14 @@ public class BusReservation {
 
     public void setUserResTime(Time userResTime) {
         this.userResTime = userResTime;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
 }

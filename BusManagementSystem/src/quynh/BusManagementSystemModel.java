@@ -65,7 +65,7 @@ public class BusManagementSystemModel {
     public void setBusReservations(ArrayList<BusReservation> busReservations) {
         this.busReservations = busReservations;
     }
-    
+
     public BusReservation getNewBusReservation() {
         return newBusReservation;
     }
@@ -242,8 +242,9 @@ public class BusManagementSystemModel {
                 Time busResTime = resultSet.getTime("BusResTime");
                 Date userResDate = resultSet.getDate("UserResDate");
                 Time userResTime = resultSet.getTime("userResTime");
+                String status = resultSet.getString("Status").trim();
 
-                BusReservation tempBusReservation = new BusReservation(resNum, userID, departure, destination, busNum, seat, busResDate, busResTime, userResDate, userResTime);
+                BusReservation tempBusReservation = new BusReservation(resNum, userID, departure, destination, busNum, seat, busResDate, busResTime, userResDate, userResTime, status);
 
                 busReservations.add(tempBusReservation);
             }
@@ -367,10 +368,10 @@ public class BusManagementSystemModel {
         boolean reserveOK = false;
 
         try {
-            
+
             // Prepare a statement to execute
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO BusReservation (UserID, Departure, Destination, BusNum, Seat, BusResDate, BusResTime, UserResDate, UserResTime) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO BusReservation (UserID, Departure, Destination, BusNum, Seat, BusResDate, BusResTime, UserResDate, UserResTime, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
             // Pass all the reservation information into each column in the database to the statement
             statement.setInt(1, currentUser.getId());
             statement.setString(2, newBusReservation.getDeparture());
@@ -381,31 +382,115 @@ public class BusManagementSystemModel {
             statement.setTime(7, newBusReservation.getBusResTime());
             statement.setDate(8, newBusReservation.getUserResDate());
             statement.setTime(9, newBusReservation.getUserResTime());
+            statement.setString(10, newBusReservation.getStatus());
+
             statement.executeUpdate();
-            
+
             reserveOK = true;
         } catch (SQLException e) {
             System.out.println("Cannot put the reservation to Database");
         }
         return reserveOK;
     }
-    
-    // get currrentUserID Bus Reservation List
+
+    // Get currrentUserID Bus Reservation List
     public ArrayList<BusReservation> getUserReservations(int userID) {
         int tempUserID;
-        
-        System.out.println(userID);
-        
+
         userBusReservations = new ArrayList<>();
-        
-        for(int i = 0; i < busReservations.size(); i++) {
+
+        for (int i = 0; i < busReservations.size(); i++) {
             tempUserID = busReservations.get(i).getUserID();
-            System.out.println(tempUserID);
-            if(userID == tempUserID) {
+            if (userID == tempUserID) {
                 userBusReservations.add(busReservations.get(i));
             }
         }
-     
+
         return userBusReservations;
+    }
+
+    // Update data from database
+    public void updateAllFromDatabase(Connection connection) {
+        getUserDatabase(connection);
+        getBusDatabase(connection);
+        getBusReservationDatabase(connection);
+        System.out.println("Updated");
+    }
+
+    public ArrayList<BusReservation> searchByResNum(ArrayList<BusReservation> list, int resNum) {
+
+        String strResNum = Integer.toString(resNum);
+        System.out.println(resNum);
+
+        ArrayList<BusReservation> reservationByResNum = new ArrayList<>();
+
+        for (int i = 0; i < list.size(); i++) {
+
+            BusReservation tempBusReservation = list.get(i);
+            String tempResNum = Integer.toString(tempBusReservation.getResNum());
+            System.out.println(tempResNum);
+
+            if (tempResNum.contains(strResNum)) {
+                System.out.println("Contains");
+                reservationByResNum.add(tempBusReservation);
+            }
+        }
+
+        return reservationByResNum;
+    }
+
+    // Search by departure
+    public ArrayList<BusReservation> searchByDeparture(ArrayList<BusReservation> list, String departure) {
+        ArrayList<BusReservation> reservationByDeparture = new ArrayList<>();        
+        
+        for (int i = 0; i < list.size(); i++) {
+
+            BusReservation tempBusReservation = list.get(i);
+            String tempDeparture = tempBusReservation.getDeparture();
+
+            if (tempDeparture.contains(departure)) {
+                System.out.println("Contains");
+                reservationByDeparture.add(tempBusReservation);
+            }
+        }
+
+        return reservationByDeparture;
+    }
+    
+    // Search by destination
+    public ArrayList<BusReservation> searchByDestination(ArrayList<BusReservation> list, String destination) {
+        ArrayList<BusReservation> reservationByDestination = new ArrayList<>();
+        
+        for (int i = 0; i < list.size(); i++) {
+
+            BusReservation tempBusReservation = list.get(i);
+            String tempDestination = tempBusReservation.getDeparture();
+
+            if (tempDestination.contains(destination)) {
+                System.out.println("Contains");
+                reservationByDestination.add(tempBusReservation);
+            }
+        }
+        
+        return reservationByDestination;
+    }
+    
+    // Search by Date
+    public ArrayList<BusReservation> searchByDate (ArrayList<BusReservation> list, Date date) {
+        
+        ArrayList<BusReservation> reservationByDate = new ArrayList<>();
+        
+        for (int i = 0; i < list.size(); i++) {
+
+            BusReservation tempBusReservation = list.get(i);
+            Date tempDate = tempBusReservation.getBusResDate();
+
+            if (tempDate.equals(date)) {
+                System.out.println("Contains");
+                reservationByDate.add(tempBusReservation);
+            }
+        }
+        
+        return reservationByDate;
     }
 }
