@@ -493,4 +493,23 @@ public class BusManagementSystemModel {
         
         return reservationByDate;
     }
+    
+    public ArrayList<BusReservation> searchByStatus (ArrayList<BusReservation> list, String status) {
+        
+        ArrayList<BusReservation> reservationByStatus = new ArrayList<>();
+        
+        for (int i = 0; i < list.size(); i++) {
+
+            BusReservation tempBusReservation = list.get(i);
+            String tempStatus = tempBusReservation.getStatus();
+
+            if (tempStatus.contains(status)) {
+                System.out.println("Contains");
+                reservationByStatus.add(tempBusReservation);
+            }
+        }
+        
+        return reservationByStatus;
+        
+    }
 }
