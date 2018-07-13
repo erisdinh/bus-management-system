@@ -184,19 +184,35 @@ public class UserFormController implements Initializable {
     @FXML
     private Tab tabReservationHistory;
     @FXML
-    private ComboBox<Integer> comboBoxSearchBusNum;
-    @FXML
     private ComboBox<String> comboxBoxSearchDeparture;
     @FXML
     private ComboBox<String> comboBoxSearchDestination;
     @FXML
     private DatePicker datePickerSearchDate;
     @FXML
-    private ComboBox<String> comboBoxSearchTime;
-    @FXML
     private ComboBox<String> comboBoxSearchStatus;
     @FXML
     private TextField textfieldSearchResNum;
+    @FXML
+    private Button buttonChangePhoneNum;
+    @FXML
+    private Button buttonChangeMail;
+    @FXML
+    private TextField textfieldDOB;
+    @FXML
+    private TextField textfieldMajor;
+    @FXML
+    private TextField textfieldHomeCampus;
+    @FXML
+    private TextField textfieldPhoneNum;
+    @FXML
+    private TextField textfieldMail;
+    @FXML
+    private Button buttonChangePass;
+    @FXML
+    private TextField textfieldName;
+    @FXML
+    private TextField textfieldID;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -384,7 +400,7 @@ public class UserFormController implements Initializable {
             int busNum = comboBoxBusNum.getValue();
             String seat = choseTogglebutton.getId();
             String status = "On going";
-            
+
             // Date/Time reserve the bus
             Date busResDate = Date.valueOf(datePickerDateRes.getValue());
             Time busResTime = Time.valueOf(comboBoxBusTime.getValue() + ":00");
@@ -565,17 +581,16 @@ public class UserFormController implements Initializable {
 
     @FXML
     private void handleButtonSearch(ActionEvent event) {
-        
+
         // Clear the observable list
         ObservableList<BusReservation> items = tableReserveation.getItems();
         items.clear();
-        
+
 //        Time time = Time.valueOf(comboBoxSearchTime.getValue() + ":00");
-        
         ArrayList<BusReservation> result = new ArrayList<>();
         result = model.getUserReservations(model.getCurrentUser().getId());
-        
-        if (!textfieldSearchResNum.getText().equals("")) {
+
+        if (!(textfieldSearchResNum.getText().equals(""))) {
             int resNum = Integer.parseInt(textfieldSearchResNum.getText());
             System.out.println(resNum);
             result = model.searchByResNum(result, resNum);
@@ -585,14 +600,18 @@ public class UserFormController implements Initializable {
             result = model.searchByDeparture(result, departure);
         }
         if (!(comboBoxSearchDestination.getValue() == null)) {
-            String destination = comboBoxDestination.getValue();
+            String destination = comboBoxSearchDestination.getValue();
             result = model.searchByDestination(result, destination);
         }
         if (!(datePickerSearchDate.getValue() == null)) {
             Date date = Date.valueOf(datePickerSearchDate.getValue());
             result = model.searchByDate(result, date);
         }
-        
+        if (!(comboBoxSearchStatus.getValue() == null)) {
+            String status = comboBoxSearchStatus.getValue();
+            result = model.searchByStatus(result, status);
+        }
+
         // Pass result list to an observable list
         for (int i = 0; i < result.size(); i++) {
             items.add(result.get(i));
@@ -611,7 +630,6 @@ public class UserFormController implements Initializable {
         columnTime.setCellValueFactory(new PropertyValueFactory<BusReservation, Time>("busResTime"));
         columnStatus.setCellValueFactory(new PropertyValueFactory<BusReservation, String>("status"));
 
-        
     }
 
     @FXML
@@ -651,17 +669,96 @@ public class UserFormController implements Initializable {
     // When the user click to see Reservation History -> Initialize the histpry form
     // Show the history in a table
     @FXML
-    private void handleReservationHistory(Event event) {
-        model.getBusDatabase(connection);
+    private void initialHistoryForm(Event event) {
+        resetHistoryForm();
+
+        // Initial status list for comboBoxSearchStatus
+        ArrayList<String> statuses = new ArrayList<>();
+        statuses.add("On going");
+        statuses.add("Completed");
+        statuses.add("Cancelled");
+
+        model.getBusReservationDatabase(connection);
         InitialUserBusResevations();
         comboxBoxSearchDeparture.setItems(FXCollections.observableArrayList(this.departure));
+        comboBoxSearchDestination.setItems(FXCollections.observableArrayList(this.departure));
+        comboBoxSearchStatus.setItems(FXCollections.observableArrayList(statuses));
     }
-    
+
     private void resetHistoryForm() {
-        textfieldSearchResNum.setText(null);
+        textfieldSearchResNum.setText("");
         comboxBoxSearchDeparture.setItems(null);
         comboBoxSearchDestination.setItems(null);
         datePickerSearchDate.setValue(null);
         comboBoxSearchStatus.setItems(null);
     }
+
+    @FXML
+    private void handleButtonChangePhoneNum(ActionEvent event) {
+        if (buttonChangePhoneNum.getText().equals("Change")) {
+            textfieldPhoneNum.setDisable(false);
+            buttonChangePhoneNum.setText("Save");
+        } else {
+            String phoneNum = textfieldPhoneNum.getText();
+            model.getCurrentUser().setPhoneNum(phoneNum);
+            User user = model.getCurrentUser();
+            boolean update = model.updateUserToDatabase(connection, user);
+            if (update == false) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Cannot update!");
+                alert.showAndWait();
+            } else {
+                buttonChangePhoneNum.setText("Change");
+                initializeUserInfo();
+            }
+        }
+    }
+
+    @FXML
+    private void handleButtonChangeMail(ActionEvent event) {
+        if (buttonChangeMail.getText().equals("Change")) {
+            textfieldMail.setDisable(false);
+            buttonChangeMail.setText("Save");
+        } else {
+            String mail = textfieldMail.getText();
+            model.getCurrentUser().setMail(mail);
+            User user = model.getCurrentUser();
+            boolean update = model.updateUserToDatabase(connection, user);
+            if(update == false) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Cannot update!");
+                alert.showAndWait();
+            } else {
+                buttonChangeMail.setText("Change");
+                initializeUserInfo();
+            }
+        }
+    }
+
+    @FXML
+    private void handleButtonChangePass(ActionEvent event) {
+    }
+
+    // Initialize User Information Form
+    @FXML
+    private void initializeUserInfo(Event event) {
+        initializeUserInfo();
+    }
+
+    private void initializeUserInfo() {
+        textfieldID.setText(Integer.toString(model.getCurrentUser().getId()));
+        textfieldName.setText(model.getCurrentUser().getName());
+        textfieldDOB.setText(model.getCurrentUser().getDob().toString());
+        textfieldMajor.setText(model.getCurrentUser().getMajor());
+        textfieldHomeCampus.setText(model.getCurrentUser().getHomeCampus());
+        textfieldPhoneNum.setText(model.getCurrentUser().getPhoneNum());
+        textfieldMail.setText(model.getCurrentUser().getMail());
+
+        textfieldID.setDisable(true);
+        textfieldName.setDisable(true);
+        textfieldDOB.setDisable(true);
+        textfieldMajor.setDisable(true);
+        textfieldHomeCampus.setDisable(true);
+        textfieldPhoneNum.setDisable(true);
+        textfieldMail.setDisable(true);
+    }
+
 }

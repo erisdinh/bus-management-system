@@ -1,30 +1,32 @@
 package data;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.Objects;
 
 public class User {
 
     private int id;
     private String pass;
+    private String accType;
     private String name;
     private Date dob;
+    private String major;
+    private String homeCampus;
     private String phoneNum;
     private String mail;
-    private String homeCampus;
-    private String accType;
 
     public User() {}
-
-    public User(int id, String pass, String accType, String name, Date dob, String phoneNum, String mail, String homeCampus) {
+    
+    public User(int id, String pass, String accType, String name, Date dob, String major, String homeCampus, String phoneNum, String mail) {
         setId(id);
         setPass(pass);
+        setAccType(accType);
         setName(name);
         setDob(dob);
-        setPhoneNum(phoneNum);
+        setMajor(major);
+        setHomeCampus(homeCampus);
         setPhoneNum(phoneNum);
         setMail(mail);
-        setHomeCampus(homeCampus);
     }
 
     public int getId() {
@@ -43,6 +45,14 @@ public class User {
         this.pass = pass;
     }
 
+    public String getAccType() {
+        return accType;
+    }
+
+    public void setAccType(String accType) {
+        this.accType = accType;
+    }
+
     public String getName() {
         return name;
     }
@@ -57,6 +67,22 @@ public class User {
 
     public void setDob(Date dob) {
         this.dob = dob;
+    }
+
+    public String getMajor() {
+        return major;
+    }
+
+    public void setMajor(String major) {
+        this.major = major;
+    }
+
+    public String getHomeCampus() {
+        return homeCampus;
+    }
+
+    public void setHomeCampus(String homeCampus) {
+        this.homeCampus = homeCampus;
     }
 
     public String getPhoneNum() {
@@ -75,21 +101,7 @@ public class User {
         this.mail = mail;
     }
 
-    public String getHomeCampus() {
-        return homeCampus;
-    }
 
-    public void setHomeCampus(String homeCampus) {
-        this.homeCampus = homeCampus;
-    }
-
-    public String getAccType() {
-        return accType;
-    }
-
-    public void setAccType(String accType) {
-        this.accType = accType;
-    }
 
     //overide hashCode()
     @Override

@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observable;
@@ -161,12 +162,14 @@ public class BusManagementSystemModel {
                 String accType = resultSet.getString("AccType");
                 String name = resultSet.getString("Name").trim();
                 Date dob = resultSet.getDate("DOB");
+                String major = resultSet.getString("Major").trim();
+                String homeCampus = resultSet.getString("HomeCampus").trim();
                 String phoneNum = resultSet.getString("PhoneNum").trim();
                 String mail = resultSet.getString("Mail").trim();
-                String homeCampus = resultSet.getString("HomeCampus").trim();
+                
 
                 // Store temporary user data into tempUser
-                User tempUser = new User(ID, pass, accType, name, dob, phoneNum, mail, homeCampus);
+                User tempUser = new User(ID, pass, accType, name, dob, major, homeCampus, phoneNum, mail);
 
                 // Add tempAdmin to admins list
                 users.add(tempUser);
@@ -409,7 +412,7 @@ public class BusManagementSystemModel {
         return userBusReservations;
     }
 
-    // Update data from database
+    // Get all data from database
     public void updateAllFromDatabase(Connection connection) {
         getUserDatabase(connection);
         getBusDatabase(connection);
@@ -417,6 +420,7 @@ public class BusManagementSystemModel {
         System.out.println("Updated");
     }
 
+    // Search reservations by reservation number
     public ArrayList<BusReservation> searchByResNum(ArrayList<BusReservation> list, int resNum) {
 
         String strResNum = Integer.toString(resNum);
@@ -431,7 +435,6 @@ public class BusManagementSystemModel {
             System.out.println(tempResNum);
 
             if (tempResNum.contains(strResNum)) {
-                System.out.println("Contains");
                 reservationByResNum.add(tempBusReservation);
             }
         }
@@ -439,7 +442,7 @@ public class BusManagementSystemModel {
         return reservationByResNum;
     }
 
-    // Search by departure
+    // Search reservations by departure
     public ArrayList<BusReservation> searchByDeparture(ArrayList<BusReservation> list, String departure) {
         ArrayList<BusReservation> reservationByDeparture = new ArrayList<>();        
         
@@ -449,7 +452,6 @@ public class BusManagementSystemModel {
             String tempDeparture = tempBusReservation.getDeparture();
 
             if (tempDeparture.contains(departure)) {
-                System.out.println("Contains");
                 reservationByDeparture.add(tempBusReservation);
             }
         }
@@ -457,17 +459,16 @@ public class BusManagementSystemModel {
         return reservationByDeparture;
     }
     
-    // Search by destination
+    // Search reservations by destination
     public ArrayList<BusReservation> searchByDestination(ArrayList<BusReservation> list, String destination) {
         ArrayList<BusReservation> reservationByDestination = new ArrayList<>();
         
         for (int i = 0; i < list.size(); i++) {
 
             BusReservation tempBusReservation = list.get(i);
-            String tempDestination = tempBusReservation.getDeparture();
+            String tempDestination = tempBusReservation.getDestination();
 
             if (tempDestination.contains(destination)) {
-                System.out.println("Contains");
                 reservationByDestination.add(tempBusReservation);
             }
         }
@@ -475,7 +476,7 @@ public class BusManagementSystemModel {
         return reservationByDestination;
     }
     
-    // Search by Date
+    // Search reservations by bus-reservation date
     public ArrayList<BusReservation> searchByDate (ArrayList<BusReservation> list, Date date) {
         
         ArrayList<BusReservation> reservationByDate = new ArrayList<>();
@@ -486,7 +487,6 @@ public class BusManagementSystemModel {
             Date tempDate = tempBusReservation.getBusResDate();
 
             if (tempDate.equals(date)) {
-                System.out.println("Contains");
                 reservationByDate.add(tempBusReservation);
             }
         }
@@ -494,6 +494,7 @@ public class BusManagementSystemModel {
         return reservationByDate;
     }
     
+    // Search reservations ry status of the reservation
     public ArrayList<BusReservation> searchByStatus (ArrayList<BusReservation> list, String status) {
         
         ArrayList<BusReservation> reservationByStatus = new ArrayList<>();
@@ -504,7 +505,6 @@ public class BusManagementSystemModel {
             String tempStatus = tempBusReservation.getStatus();
 
             if (tempStatus.contains(status)) {
-                System.out.println("Contains");
                 reservationByStatus.add(tempBusReservation);
             }
         }
@@ -512,4 +512,43 @@ public class BusManagementSystemModel {
         return reservationByStatus;
         
     }
+    
+    // Update the user information into the User database
+    public boolean updateUserToDatabase(Connection connection, User user) {
+        boolean update = false;
+        try {
+            String sql = "UPDATE UserName "
+                    + "SET Password=?, "
+                    + "AccType=?, "
+                    + "Name=?, "
+                    + "DOB=?, "
+                    + "Major=?, "
+                    + "HomeCampus=?, "
+                    + "PhoneNum=?, "
+                    + "Mail=? "
+                    + "WHERE ID=?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, user.getPass());
+            statement.setString(2, user.getAccType());
+            statement.setString(3, user.getName());
+            statement.setDate(4, user.getDob());
+            statement.setString(5, user.getMajor());
+            statement.setString(6, user.getHomeCampus());
+            statement.setString(7, user.getPhoneNum());
+            statement.setString(8, user.getMail());
+            statement.setInt(9, user.getId());
+            
+            statement.executeUpdate();
+            update = true;
+            System.out.println("Updated User to Database");
+        } catch (SQLException e) {
+            System.out.println("Cannot update current user");
+        }
+        
+        // Get all the database again after updating
+        updateAllFromDatabase(connection);
+        
+        return update;
+    }
+    
 }
