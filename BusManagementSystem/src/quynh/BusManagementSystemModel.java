@@ -21,6 +21,7 @@ public class BusManagementSystemModel {
     private ArrayList<Bus> buses;
     private ArrayList<BusReservation> busReservations = new ArrayList<BusReservation>();
     private BusReservation newBusReservation = new BusReservation();
+    private BusReservation subNewReservation = new BusReservation();
     private ArrayList<BusReservation> userBusReservations;
 
     // Bus 1
@@ -73,6 +74,14 @@ public class BusManagementSystemModel {
 
     public void setNewBusReservation(BusReservation newBusReservation) {
         this.newBusReservation = newBusReservation;
+    }
+
+    public BusReservation getSubNewReservation() {
+        return subNewReservation;
+    }
+
+    public void setSubNewReservation(BusReservation subNewReservation) {
+        this.subNewReservation = subNewReservation;
     }
 
     public ArrayList<String> getNorthTraToHmcNo1() {
@@ -354,41 +363,47 @@ public class BusManagementSystemModel {
     public BusReservation getLastBusReservation() {
         BusReservation lastBusReservation = new BusReservation();
         lastBusReservation = busReservations.get(busReservations.size() - 1);
-        System.out.println(lastBusReservation.getResNum());
         return lastBusReservation;
     }
 
-    public int getNewResNum() {
-        BusReservation lastBusReservation = new BusReservation();
-        lastBusReservation = getLastBusReservation();
-
-        int newResNum = lastBusReservation.getResNum() + 1;
-        return newResNum;
-    }
-
     // Put the reservation to database
-    public boolean putReservationToDatabase(Connection connection) {
+    public boolean putReservationToDatabase(Connection connection, BusReservation busReservation) {
         boolean reserveOK = false;
 
         try {
 
             // Prepare a statement to execute
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO BusReservation (UserID, Departure, Destination, BusNum, Seat, BusResDate, BusResTime, UserResDate, UserResTime, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO BusReservation (ResNum, UserID, Departure, Destination, BusNum, Seat, BusResDate, BusResTime, UserResDate, UserResTime, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             // Pass all the reservation information into each column in the database to the statement
-            statement.setInt(1, currentUser.getId());
-            statement.setString(2, newBusReservation.getDeparture());
-            statement.setString(3, newBusReservation.getDestination());
-            statement.setInt(4, newBusReservation.getBusNum());
-            statement.setString(5, newBusReservation.getSeat());
-            statement.setDate(6, newBusReservation.getBusResDate());
-            statement.setTime(7, newBusReservation.getBusResTime());
-            statement.setDate(8, newBusReservation.getUserResDate());
-            statement.setTime(9, newBusReservation.getUserResTime());
-            statement.setString(10, newBusReservation.getStatus());
-
+            statement.setInt(1, busReservation.getResNum());
+            System.out.println(busReservation.getResNum());
+            statement.setInt(2, currentUser.getId());
+            System.out.println(currentUser.getId());
+            statement.setString(3, busReservation.getDeparture());
+            System.out.println(busReservation.getDeparture());
+            statement.setString(4, busReservation.getDestination());
+            System.out.println(busReservation.getDestination());
+            statement.setInt(5, busReservation.getBusNum());
+            System.out.println(busReservation.getBusNum());
+            statement.setString(6, busReservation.getSeat());
+            System.out.println(busReservation.getSeat());
+            statement.setDate(7, busReservation.getBusResDate());
+            System.out.println(busReservation.getBusResDate());
+            statement.setTime(8, busReservation.getBusResTime());
+            System.out.println(busReservation.getBusResTime());
+            statement.setDate(9, busReservation.getUserResDate());
+            System.out.println(busReservation.getUserResDate());
+            statement.setTime(10, busReservation.getUserResTime());
+            System.out.println(busReservation.getUserResTime());
+            statement.setString(11, busReservation.getStatus());
+            System.out.println(busReservation.getStatus()); 
+           
+            System.out.println("Pre updating statement");
+            
             statement.executeUpdate();
 
+            System.out.println("After updating statement");
             reserveOK = true;
         } catch (SQLException e) {
             System.out.println("Cannot put the reservation to Database");
@@ -494,6 +509,24 @@ public class BusManagementSystemModel {
         return reservationByDate;
     }
     
+    // Search reservations by reservation time
+    public ArrayList<BusReservation> searchByTime (ArrayList<BusReservation> list, String time) {
+        
+        ArrayList<BusReservation> reservationByTime = new ArrayList<>();
+        
+        for (int i = 0; i < list.size(); i++) {
+
+            BusReservation tempBusReservation = list.get(i);
+            String tempTime = tempBusReservation.getBusResTime().toString();
+            
+            if (time.equals(tempTime)) {
+                reservationByTime.add(tempBusReservation);
+            }
+        }
+        
+        return reservationByTime;
+    }
+    
     // Search reservations ry status of the reservation
     public ArrayList<BusReservation> searchByStatus (ArrayList<BusReservation> list, String status) {
         
@@ -510,6 +543,25 @@ public class BusManagementSystemModel {
         }
         
         return reservationByStatus;
+        
+    }
+    
+    // Search reservation by bus number
+    public ArrayList<BusReservation> searchByBusNum (ArrayList<BusReservation> list, int busNum) {
+        
+        ArrayList<BusReservation> reservationByBusNum = new ArrayList<>();
+        
+        for (int i = 0; i < list.size(); i++) {
+
+            BusReservation tempBusReservation = list.get(i);
+            int tempBusNum = tempBusReservation.getBusNum();
+            System.out.println("Temp Bus Reservation Num: " + tempBusNum);
+            if (tempBusNum == busNum) {
+                reservationByBusNum.add(tempBusReservation);
+            }
+        }
+        
+        return reservationByBusNum;
         
     }
     
@@ -550,5 +602,4 @@ public class BusManagementSystemModel {
         
         return update;
     }
-    
 }

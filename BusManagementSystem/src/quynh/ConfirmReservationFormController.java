@@ -23,7 +23,6 @@ public class ConfirmReservationFormController implements Initializable {
     private Connection connection;
     private Stage stage = new Stage();
     private BusManagementSystemModel model = new BusManagementSystemModel();
-    private BusReservation newBusReservation;
 
     @FXML
     private Label labelDeparture;
@@ -41,6 +40,8 @@ public class ConfirmReservationFormController implements Initializable {
     private Button buttonConfirm;
     @FXML
     private Button buttonCancel;
+    @FXML
+    private Label labelResNum;
 
     public boolean isCancel() {
         return cancel;
@@ -78,7 +79,20 @@ public class ConfirmReservationFormController implements Initializable {
 
         model.getNewBusReservation().setUserResDate(currentDate);
         model.getNewBusReservation().setUserResTime(currentTime);
-        boolean reserved = model.putReservationToDatabase(connection);
+
+        boolean reserved;
+
+//        if(model.getSubNewReservation() == null) {
+        reserved = model.putReservationToDatabase(connection, model.getNewBusReservation());
+        System.out.println("New Bus Reservation");
+//        } else {
+//            model.getSubNewReservation().setUserResDate(currentDate);
+//            model.getSubNewReservation().setUserResTime(currentTime);
+//            
+//            reserved = model.putReservationToDatabase(connection, model.getNewBusReservation()) && model.putReservationToDatabase(connection, model.getSubNewReservation());
+//            System.out.println("New Sub Bus Reservation");
+//        }
+
         if (reserved == false) {
 
         } else {
@@ -92,7 +106,8 @@ public class ConfirmReservationFormController implements Initializable {
         stage.close();
     }
 
-    public void showReservationInfo() {
+    private void showReservationInfo() {
+        labelResNum.setText(Integer.toString(model.getNewBusReservation().getResNum()));
         labelDeparture.setText(model.getNewBusReservation().getDeparture());
         labelDestination.setText(model.getNewBusReservation().getDestination());
         labelDate.setText(model.getNewBusReservation().getBusResDate().toString());
@@ -101,5 +116,4 @@ public class ConfirmReservationFormController implements Initializable {
         labelSeat.setText(model.getNewBusReservation().getSeat());
 
     }
-
 }
