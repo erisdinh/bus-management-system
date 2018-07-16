@@ -82,13 +82,13 @@ public class ConfirmReservationFormController implements Initializable {
 
         boolean reserved;
 
-//        if(model.getSubNewReservation() == null) {
-        reserved = model.putReservationToDatabase(connection, model.getNewBusReservation());
-        System.out.println("New Bus Reservation");
+//        if (model.getSubNewReservation() == null) {
+            reserved = model.putReservationToDatabase(connection, model.getNewBusReservation());
+            System.out.println("New Bus Reservation");
 //        } else {
 //            model.getSubNewReservation().setUserResDate(currentDate);
 //            model.getSubNewReservation().setUserResTime(currentTime);
-//            
+//
 //            reserved = model.putReservationToDatabase(connection, model.getNewBusReservation()) && model.putReservationToDatabase(connection, model.getSubNewReservation());
 //            System.out.println("New Sub Bus Reservation");
 //        }

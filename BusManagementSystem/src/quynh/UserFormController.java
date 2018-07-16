@@ -237,7 +237,6 @@ public class UserFormController implements Initializable {
 //                }
 //            }
 //        });
-
         // Initialize bus info (null)
         labelBusType.setText("");
         labelNumOfSeat.setText("");
@@ -258,7 +257,11 @@ public class UserFormController implements Initializable {
         // Using lamda expression
         // Show Destination list fater changing comboxBox departure
         comboBoxDeparture.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
+
+            // reset toggle group buttonSeat
             buttonSeat.selectToggle(null);
+            resetToggleGroupSeats();
+
             destination = new ArrayList<String>();
             String chosenDeparture = comboBoxDeparture.getValue();
             if (chosenDeparture == null) {
@@ -278,7 +281,9 @@ public class UserFormController implements Initializable {
         // Show bus hours list after changing comboBox Time
         comboBoxDestination.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
 
+            // reset toggle group buttonSeat
             buttonSeat.selectToggle(null);
+            resetToggleGroupSeats();
 
             // Clear the selected items after the user changing the departure and destination
             comboBoxBusTime.setItems(null);
@@ -291,9 +296,29 @@ public class UserFormController implements Initializable {
             }
         });
 
+        datePickerDateRes.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                // reset toggle group buttonSeat
+                buttonSeat.selectToggle(null);
+                resetToggleGroupSeats();
+
+                if (comboBoxDeparture.getValue() != null && comboBoxDestination.getValue() != null
+                        && comboBoxBusTime.getValue() != null && comboBoxBusNum.getValue() != null) {
+                    ArrayList<BusReservation> seatsInBus = new ArrayList<>();
+                    seatsInBus = getUnvailableSeatsInBus();
+                    setDisableUnavailableSeats(seatsInBus);
+                }
+            }
+        });
+
         // Show the bus number and change the bus info (set bus num is 0) after the user choose the time
         comboBoxBusTime.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
+
+            // reset toggle group buttonSeat
             buttonSeat.selectToggle(null);
+            resetToggleGroupSeats();
 
             // Clear the selected items after the user changing the departure and destination
             comboBoxBusNum.setItems(null);
@@ -311,6 +336,10 @@ public class UserFormController implements Initializable {
 
         // When the bus num change, change the bus info (show the bus info)
         comboBoxBusNum.getSelectionModel().selectedItemProperty().addListener((ov, oldValue, newValue) -> {
+
+            // reset toggle group buttonSeat
+            buttonSeat.selectToggle(null);
+            resetToggleGroupSeats();
 
             if (comboBoxBusNum.getItems() == null) {
             } else {
@@ -451,7 +480,7 @@ public class UserFormController implements Initializable {
 //                subNewBusReservation = null;
 //            }
             model.setNewBusReservation(newBusReservation);
-//            model.setSubNewReservation(subNewBusReservation);
+            model.setSubNewReservation(subNewBusReservation);
 
             // Load scence graph from fxml
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ConfirmReservationForm.fxml"));
@@ -774,7 +803,28 @@ public class UserFormController implements Initializable {
     }
 
     @FXML
-    private void handleButtonChangePass(ActionEvent event) {
+    private void handleButtonChangePass(ActionEvent event) throws IOException {
+        // Load scence graph from fxml
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("UserChangePasswordForm.fxml"));
+        Parent root = (Parent) fxmlLoader.load();
+
+        // Create and show about window as modal     
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setTitle("Change Password");
+
+        // Set icon
+        stage.getIcons().add(new Image(BusManagementSystem.class.getResourceAsStream("/data/bus.png")));
+        stage.setScene(scene);
+
+        // Remember the stage, so can close it later     
+        UserChangePasswordFormController ctrlChangePassword = fxmlLoader.getController();
+        ctrlChangePassword.setModel(model);
+        ctrlChangePassword.setStage(stage);
+
+        // wait user response within this block
+        stage.showAndWait();
     }
 
     // Initialize User Information Form
@@ -805,13 +855,15 @@ public class UserFormController implements Initializable {
         BusReservation tempBusReservation = new BusReservation();
         ObservableList<Toggle> toggles = buttonSeat.getToggles();
 
+        resetToggleGroupSeats();
+
         System.out.println("Run Set Disable");
-        
+
         for (int i = 0; i < result.size(); i++) {
 
             tempBusReservation = result.get(i);
             System.out.println("Temp Bus Reservation:" + tempBusReservation.getSeat());
-            
+
             for (int j = 0; j < toggles.size(); j++) {
                 Node tempNode = (Node) toggles.get(j);
                 System.out.println("Temp Node: " + tempNode);
@@ -827,34 +879,40 @@ public class UserFormController implements Initializable {
         ArrayList<BusReservation> seatsInBus = new ArrayList<>();
         seatsInBus = model.getBusReservationDatabase(connection);
         System.out.println("Before: " + seatsInBus.size());
-        
+
         String chosenDepature = comboBoxDeparture.getValue();
         seatsInBus = model.searchByDeparture(seatsInBus, chosenDepature);
         System.out.println("After Departure: " + seatsInBus.size());
-        
+
         String chosenDestination = comboBoxDestination.getValue();
         seatsInBus = model.searchByDestination(seatsInBus, chosenDestination);
         System.out.println("After Destination: " + seatsInBus.size());
-        
+
         Date chosenDate = Date.valueOf(datePickerDateRes.getValue());
         seatsInBus = model.searchByDate(seatsInBus, chosenDate);
         System.out.println("After Date: " + seatsInBus.size());
-        
+
         String chosenTime = comboBoxBusTime.getValue() + ":00";
         if (chosenTime.charAt(1) == ':') {
-            chosenTime = "0" + chosenTime; 
+            chosenTime = "0" + chosenTime;
         }
         System.out.println(comboBoxBusTime.getValue());
         System.out.println(chosenTime);
         seatsInBus = model.searchByTime(seatsInBus, chosenTime);
         System.out.println("After Time: " + seatsInBus.size());
-        
+
         int chosenBusNum = comboBoxBusNum.getValue();
         System.out.println("Chosen BusNum: " + chosenBusNum);
         seatsInBus = model.searchByBusNum(seatsInBus, chosenBusNum);
         System.out.println("After Bus Num: " + seatsInBus.size());
-        
+
         return seatsInBus;
     }
 
+    private void resetToggleGroupSeats() {
+        buttonSeat.getToggles().forEach(toggle -> {
+            Node node = (Node) toggle;
+            node.setDisable(false);
+        });
+    }
 }
